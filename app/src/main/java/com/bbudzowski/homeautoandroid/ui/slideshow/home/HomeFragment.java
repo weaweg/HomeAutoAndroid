@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoandroid.ui.home;
+package com.bbudzowski.homeautoandroid.ui.slideshow.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

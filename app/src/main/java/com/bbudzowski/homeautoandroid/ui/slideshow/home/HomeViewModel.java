@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoandroid.ui.home;
+package com.bbudzowski.homeautoandroid.ui.slideshow.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
