@@ -24,7 +24,8 @@ public class DeviceApi implements BaseApi {
         List<DeviceEntity> devices = new ArrayList<>();
         for(int i = 0; i < 4; ++i) {
             DeviceEntity dev = new DeviceEntity();
-            dev.name = "test " + i;
+            dev.id = "id " + i;
+            dev.name = "name " + i;
             dev.location = "loc " + i;
             devices.add(dev);
         }

@@ -1,19 +1,16 @@
 package com.bbudzowski.homeautoandroid.ui;
 
-import android.view.LayoutInflater;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.fragment.app.Fragment;
 
 import com.bbudzowski.homeautoandroid.R;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -29,32 +26,33 @@ public abstract class ListFragment<T> extends Fragment {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 return;
             }
-            int guideVertId = root.getChildAt(0).getId();
-            int guideHorizId = root.getId();
+            int guideVertId = R.id.guideline;
+            int prevViewId = root.getId();
 
             Class<?> unitClass = units.get(0).getClass();
             Field[] unitFields = unitClass.getFields();
+            int constraint = ConstraintSet.TOP;
             for(int i = 0; i < units.size(); ++i) {
                 ConstraintLayout view = new ConstraintLayout(root.getContext());
+                view.setId(("cl" + i).hashCode());
                 view.setBackgroundResource(R.drawable.layout_border);
                 int prevTextId = view.getId();
+                int nextConstraint = ConstraintSet.TOP;
                 try {
-                    for (Field unitField : unitFields) {
+                    for (int j = 0; j < unitFields.length; ++j) {
                         TextView textView = new TextView(view.getContext());
-                        textView.setText((String) unitField.get(units.get(i)));
+                        textView.setId(("tv" + j).hashCode());
+                        textView.setText((CharSequence) unitFields[j].get(units.get(i)));
                         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                         view.addView(textView);
 
+                        textView.setLayoutParams(new LayoutParams(
+                                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                         ConstraintSet set = new ConstraintSet();
                         set.clone(view);
-                        set.connect(textView.getId(), ConstraintSet.TOP, prevTextId, ConstraintSet.BOTTOM);
-                        /*ConstraintLayout.LayoutParams textParams = new ConstraintLayout.LayoutParams(
-                                ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-                        if(i == 0)
-                            textParams.topToTop = prevTextId;
-                        else
-                            textParams.topToBottom = prevTextId;
-                        textView.setLayoutParams(textParams);*/
+                        set.connect(textView.getId(), ConstraintSet.TOP, prevTextId, nextConstraint);
+                        set.applyTo(view);
+                        nextConstraint = ConstraintSet.BOTTOM;
                         prevTextId = textView.getId();
                     }
                 }
@@ -62,26 +60,28 @@ public abstract class ListFragment<T> extends Fragment {
                     throw new RuntimeException(e);
                 }
                 root.addView(view);
-                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
-                        0, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-                layoutParams.matchConstraintPercentWidth = (float) 0.5;
-                layoutParams.topToBottom = guideHorizId;
-                if(i%2 == 0)
-                    layoutParams.rightToLeft = guideVertId;
-                else
-                    layoutParams.leftToRight = guideVertId;
-                view.setLayoutParams(layoutParams);
 
-                Guideline guideHoriz = new Guideline(root.getContext());
-                root.addView(guideHoriz);
+                view.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT));
+                ConstraintSet set = new ConstraintSet();
+                float px = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics());
 
-                ConstraintLayout.LayoutParams guidelineParams =
-                        new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-                guidelineParams.orientation = ConstraintSet.HORIZONTAL;
-                guidelineParams.topToBottom = view.getId();
+                set.clone(root);
+                set.connect(view.getId(), ConstraintSet.TOP, prevViewId, constraint, (int) px);
+                set.constrainPercentWidth(view.getId(), (float) 0.4);
+                if(i%2 == 0) {
+                    set.center(view.getId(), ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0,
+                            guideVertId, ConstraintSet.LEFT, 0, 2.f/3.f);
+                }
+                else {
+                    set.center(view.getId(), guideVertId, ConstraintSet.RIGHT, 0,
+                            ConstraintSet.PARENT_ID, ConstraintSet.RIGHT, 0, 1.f/3.f);
+                    prevViewId = view.getId();
+                }
 
-                guideHoriz.setLayoutParams(guidelineParams);
-                guideHorizId = guideHoriz.getId();
+                set.applyTo(root);
+                constraint = ConstraintSet.BOTTOM;
             }
+
     }
 }
