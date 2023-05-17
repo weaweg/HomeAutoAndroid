@@ -1,6 +1,6 @@
 package com.bbudzowski.homeautoandroid.tables;
 
-public class Measurement {
+public class MeasurementEntity {
     public String device_id;
     public Integer sensor_id;
     public Long m_time;

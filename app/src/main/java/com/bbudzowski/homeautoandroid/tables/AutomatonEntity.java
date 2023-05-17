@@ -1,4 +1,4 @@
 package com.bbudzowski.homeautoandroid.tables;
 
-public class Automaton {
+public class AutomatonEntity {
 }

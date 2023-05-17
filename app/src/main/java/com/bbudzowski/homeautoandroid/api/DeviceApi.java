@@ -1,6 +1,6 @@
 package com.bbudzowski.homeautoandroid.api;
 
-import com.bbudzowski.homeautoandroid.tables.Device;
+import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import okhttp3.*;
@@ -13,7 +13,7 @@ public class DeviceApi implements BaseApi {
     private final OkHttpClient client = new OkHttpClient();
     private final String url = BaseApi.url + "/devices";
 
-    public List<Device> getDevices() {
+    public List<DeviceEntity> getDevices() {
         /*Request request = new Request.Builder().get().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             return JSON.std.listOfFrom(Device.class, response.body().string());
@@ -21,9 +21,9 @@ public class DeviceApi implements BaseApi {
         catch (Exception e) {
             return null;
         }*/
-        List<Device> devices = new ArrayList<>();
+        List<DeviceEntity> devices = new ArrayList<>();
         for(int i = 0; i < 4; ++i) {
-            Device dev = new Device();
+            DeviceEntity dev = new DeviceEntity();
             dev.name = "test " + i;
             dev.location = "loc " + i;
             devices.add(dev);

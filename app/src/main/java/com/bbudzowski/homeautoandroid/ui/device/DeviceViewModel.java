@@ -5,12 +5,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.bbudzowski.homeautoandroid.api.DeviceApi;
-import com.bbudzowski.homeautoandroid.tables.Device;
+import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 
 import java.util.List;
 
 public class DeviceViewModel extends ViewModel {
-    private final MutableLiveData<List<Device>> devices;
+    private final MutableLiveData<List<DeviceEntity>> devices;
     private final DeviceApi dvApi;
 
     public DeviceViewModel() {
@@ -19,7 +19,7 @@ public class DeviceViewModel extends ViewModel {
         devices.setValue(dvApi.getDevices());
     }
 
-    public LiveData<List<Device>> getDevices() {
+    public LiveData<List<DeviceEntity>> getDevices() {
         return devices;
     }
 }

@@ -1,6 +1,6 @@
 package com.bbudzowski.homeautoandroid.tables;
 
-public class Sensor {
+public class SensorEntity {
     public String device_id;
     public Integer id;
     public Integer data_type;

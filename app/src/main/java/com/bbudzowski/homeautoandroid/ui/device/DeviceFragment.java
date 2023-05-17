@@ -11,12 +11,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
-import com.bbudzowski.homeautoandroid.tables.Device;
+import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
 
 import java.util.List;
 
-public class DeviceFragment extends ListFragment<Device> {
+public class DeviceFragment extends ListFragment<DeviceEntity> {
 
     private FragmentListBinding binding;
 
@@ -28,8 +28,8 @@ public class DeviceFragment extends ListFragment<Device> {
 
         binding = FragmentListBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();
-        final Observer<List<Device>> deviceObserver =
-                devs -> updateUI(inflater, container, root, devs);
+        final Observer<List<DeviceEntity>> deviceObserver =
+                devs -> updateUI(root, devs);
         deviceViewModel.getDevices().observe(getViewLifecycleOwner(), deviceObserver);
         return root;
     }

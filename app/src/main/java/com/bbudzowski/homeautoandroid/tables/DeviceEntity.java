@@ -1,6 +1,6 @@
 package com.bbudzowski.homeautoandroid.tables;
 
-public class Device {
+public class DeviceEntity {
     public String id;
     public String ip;
     public String name;
