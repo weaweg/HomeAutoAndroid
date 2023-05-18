@@ -10,15 +10,11 @@ import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import java.util.List;
 
 public class DeviceViewModel extends ViewModel {
-    private final MutableLiveData<List<DeviceEntity>> devices;
-    private final DeviceApi dvApi;
+    private final MutableLiveData<List<DeviceEntity>> devices = new MutableLiveData<>();
 
     public DeviceViewModel() {
-        devices = new MutableLiveData<>();
-        dvApi = new DeviceApi();
-        devices.setValue(dvApi.getDevices());
+        devices.setValue(new DeviceApi().getDevices());
     }
-
     public LiveData<List<DeviceEntity>> getDevices() {
         return devices;
     }

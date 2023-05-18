@@ -1,58 +1,46 @@
 package com.bbudzowski.homeautoandroid.api;
 
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
-import com.fasterxml.jackson.jr.ob.JSON;
-
-import okhttp3.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
-public class DeviceApi implements BaseApi {
-    private final OkHttpClient client = new OkHttpClient();
-    private final String url = BaseApi.url + "/devices";
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.internal.http.HttpStatusCodesKt;
+
+public class DeviceApi extends BaseApi<DeviceEntity>  {
+    private final String base_url = host + "/devices";
 
     public List<DeviceEntity> getDevices() {
-        /*Request request = new Request.Builder().get().url(url).build();
-        try (Response response = client.newCall(request).execute()) {
-            return JSON.std.listOfFrom(Device.class, response.body().string());
-        }
-        catch (Exception e) {
-            return null;
-        }*/
-        List<DeviceEntity> devices = new ArrayList<>();
-        for(int i = 0; i < 4; ++i) {
-            DeviceEntity dev = new DeviceEntity();
-            dev.id = "id " + i;
-            dev.name = "name " + i;
-            dev.location = "loc " + i;
-            devices.add(dev);
-        }
-        return devices;
+        Response res = getResponse(base_url + "/all");
+        return getResultList(res);
     }
 
-    public Response renameDevice(String name) throws IOException {
-        RequestBody body = RequestBody.create(JSON.std.asString(name), MediaType.get("application/json; charset=utf-8"));
-        Request request = new Request.Builder().patch(body).url(url + "/rename").build();
-        try (Response response = client.newCall(request).execute()) {
-            return response;
-        }
-        catch (Exception e) {
-            return null;
-        }
+    public DeviceEntity getDevice(String device_id) {
+        Response res = getResponse(base_url);
+        return getSingleResult(res);
     }
 
-    public Response changeLocation(String loc) throws IOException {
+    private int updateDevice(DeviceEntity device) {
+        ObjectNode json = mapper.createObjectNode();
+        json.put("device_id", device.device_id);
+        json.put("name", device.name);
+        json.put("location", device.location);
+        String bodyString = null;
         try {
-            RequestBody body = RequestBody.create(JSON.std.asString(loc), MediaType.get("application/json; charset=utf-8"));
-            Request request = new Request.Builder().patch(body).url(url + "/location").build();
-            try (Response response = client.newCall(request).execute()) {
-                return response;
-            }
+            bodyString = mapper.writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            return HttpStatusCodesKt.HTTP_INTERNAL_SERVER_ERROR;
         }
-        catch (Exception e) {
-            return null;
+        try (Response res = postResponse(base_url + "/update", bodyString)) {
+            return res.code();
         }
     }
 }

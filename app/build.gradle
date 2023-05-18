@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.jr:jackson-jr-objects:2.15.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'

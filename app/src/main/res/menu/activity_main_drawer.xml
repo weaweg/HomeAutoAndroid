@@ -5,8 +5,12 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_device"
-            android:icon="@drawable/ic_menu_gallery"
+            android:id="@+id/nav_devices"
+            android:icon="@drawable/ic_circle"
             android:title="@string/menu_device" />
+        <item
+            android:id="@+id/nav_sensors"
+            android:icon="@drawable/ic_circle"
+            android:title="@string/menu_sensor" />
     </group>
 </menu>
