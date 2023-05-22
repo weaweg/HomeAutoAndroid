@@ -2,12 +2,15 @@ package com.bbudzowski.homeautoandroid.api;
 
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SensorApi extends BaseApi {
+public class SensorApi extends BaseApi<SensorEntity> {
 
-    private final String url = host + "/sensors";
+    private final String url = host + "/sensor";
+
+    public SensorApi(InputStream keyFile) { super(keyFile); }
     public List<SensorEntity> getSensors() {
         /*Request request = new Request.Builder().get().url(url).build();
         try (Response response = client.newCall(request).execute()) {

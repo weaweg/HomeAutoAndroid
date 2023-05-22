@@ -6,6 +6,10 @@
     app:startDestination="@id/nav_home">
 
     <fragment
+        android:id="@+id/nav_device"
+        android:name="com.bbudzowski.homeautoandroid.ui.device.DeviceUnitFragment"
+        android:label="@string/menu_device" />
+    <fragment
         android:id="@+id/nav_home"
         android:name="com.bbudzowski.homeautoandroid.ui.home.HomeFragment"
         android:label="@string/menu_home"
@@ -13,12 +17,12 @@
 
     <fragment
         android:id="@+id/nav_devices"
-        android:name="com.bbudzowski.homeautoandroid.ui.device.DeviceFragment"
-        android:label="@string/menu_device"
+        android:name="com.bbudzowski.homeautoandroid.ui.device.DeviceListFragment"
+        android:label="@string/menu_devices"
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/nav_sensors"
         android:name="com.bbudzowski.homeautoandroid.ui.sensor.SensorFragment"
-        android:label="@string/menu_sensor" />
+        android:label="@string/menu_sensors" />
 
 </navigation>

@@ -1,5 +1,7 @@
 package com.bbudzowski.homeautoandroid.ui;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +11,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
+import com.bbudzowski.homeautoandroid.ui.device.DeviceUnitFragment;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -51,11 +57,14 @@ public abstract class ListFragment<T> extends Fragment {
             int prevTextId = view.getId();
             int nextConstraint = ConstraintSet.TOP;
 
+            List<String> fieldsValue = new ArrayList<>();
             for (int j = 0; j < displayFields.size(); ++j) {
                 TextView textView = new TextView(view.getContext());
                 textView.setId(("tv" + j).hashCode());
                 try {
-                    textView.setText(String.valueOf(displayFields.get(j).get(units.get(i))));
+                    String tmp = String.valueOf(displayFields.get(j).get(units.get(i)));
+                    fieldsValue.add(tmp);
+                    textView.setText(tmp);
                 } catch (IllegalAccessException e) {
                     handleError(root, e.getMessage());
                     return;
@@ -71,6 +80,13 @@ public abstract class ListFragment<T> extends Fragment {
                 nextConstraint = ConstraintSet.BOTTOM;
                 prevTextId = textView.getId();
             }
+            if (unitClass.equals(DeviceEntity.class))
+                view.setOnClickListener(onDeviceClick(fieldsValue.get(0)));
+            else if(unitClass.equals(SensorEntity.class))
+                view.setOnClickListener(onSensorClick(fieldsValue.get(0), fieldsValue.get(1)));
+            else
+                throw new ClassCastException();
+
             root.addView(view);
             view.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT));
             ConstraintSet set = new ConstraintSet();
@@ -102,11 +118,28 @@ public abstract class ListFragment<T> extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
+    private void replaceFragment(View view, Fragment fragment, Bundle bundle) {
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(view.getRootView().getId(), fragment, fragment.getClass().getName());
+        fragmentTransaction.addToBackStack(view.getRootView().getTag().toString());
+        fragmentTransaction.commit();
+    }
+
     private List<Field> getDeviceDisplayFields() throws NoSuchFieldException {
         List<Field> fields = new ArrayList<>();
         fields.add(DeviceEntity.class.getDeclaredField("name"));
         fields.add(DeviceEntity.class.getDeclaredField("location"));
         return fields;
+    }
+
+    public View.OnClickListener onDeviceClick(String device_id) {
+        return view -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("device_id", device_id);
+            replaceFragment(view.getRootView(), new DeviceUnitFragment(), bundle);
+        };
     }
 
     private List<Field> getSensorDisplayFields() throws NoSuchFieldException {
@@ -116,5 +149,12 @@ public abstract class ListFragment<T> extends Fragment {
         fields.add(SensorEntity.class.getDeclaredField("current_state"));
         fields.add(SensorEntity.class.getDeclaredField("units"));
         return fields;
+    }
+
+    public View.OnClickListener onSensorClick(String device_id, String sensor_id) {
+        return v -> {
+            Bundle bundle = new Bundle();
+
+        };
     }
 }

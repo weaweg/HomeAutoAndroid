@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
+import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
@@ -23,8 +23,9 @@ public class SensorFragment extends ListFragment<SensorEntity> {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        SensorViewModel sensorViewModel =
-                new ViewModelProvider(this).get(SensorViewModel.class);
+        SensorViewModel sensorViewModel = new SensorViewModel(
+                getResources().openRawResource(R.raw.server_ts));
+                //new ViewModelProvider(this).get(SensorViewModel.class);
 
         binding = FragmentListBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();

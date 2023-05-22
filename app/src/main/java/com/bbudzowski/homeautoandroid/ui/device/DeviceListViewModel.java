@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel;
 import com.bbudzowski.homeautoandroid.api.DeviceApi;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 
+import java.io.InputStream;
 import java.util.List;
 
-public class DeviceViewModel extends ViewModel {
+public class DeviceListViewModel extends ViewModel {
     private final MutableLiveData<List<DeviceEntity>> devices = new MutableLiveData<>();
 
-    public DeviceViewModel() {
-        devices.setValue(new DeviceApi().getDevices());
+    public DeviceListViewModel(InputStream keyFile) {
+        devices.setValue(new DeviceApi(keyFile).getDevices());
     }
     public LiveData<List<DeviceEntity>> getDevices() {
         return devices;
