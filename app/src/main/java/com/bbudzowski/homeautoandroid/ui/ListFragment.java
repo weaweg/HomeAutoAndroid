@@ -118,12 +118,12 @@ public abstract class ListFragment<T> extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    private void replaceFragment(View view, Fragment fragment, Bundle bundle) {
+    private void replaceFragment(Fragment fragment, Bundle bundle) {
         fragment.setArguments(bundle);
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(view.getRootView().getId(), fragment, fragment.getClass().getName());
-        fragmentTransaction.addToBackStack(view.getRootView().getTag().toString());
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.replace(R.id.nav_host_fragment_content_main, fragment);
         fragmentTransaction.commit();
     }
 
@@ -138,7 +138,7 @@ public abstract class ListFragment<T> extends Fragment {
         return view -> {
             Bundle bundle = new Bundle();
             bundle.putString("device_id", device_id);
-            replaceFragment(view.getRootView(), new DeviceUnitFragment(), bundle);
+            replaceFragment(new DeviceUnitFragment(), bundle);
         };
     }
 
@@ -154,7 +154,9 @@ public abstract class ListFragment<T> extends Fragment {
     public View.OnClickListener onSensorClick(String device_id, String sensor_id) {
         return v -> {
             Bundle bundle = new Bundle();
-
+            bundle.putString("device_id", device_id);
+            bundle.putString("sensor_id", sensor_id);
+            //replaceFragment(new SensorUnitFragment(), bundle);
         };
     }
 }

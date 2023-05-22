@@ -24,17 +24,8 @@ public class DeviceApi extends BaseApi<DeviceEntity>  {
     }
 
     public List<DeviceEntity> getDevices() {
-        //Response res = getResponse(base_url + "/all");
-        //return getResultList(res, type);
-        List<DeviceEntity> devices = new ArrayList<>();
-        for (int i = 0; i < 8; ++i) {
-            DeviceEntity dev = new DeviceEntity();
-            dev.device_id = "device_id " + i;
-            dev.name = "name " + i;
-            dev.location = "location " + i;
-            devices.add(dev);
-        }
-        return devices;
+        Response res = getResponse(base_url + "/all");
+        return getResultList(res, type);
     }
 
     public DeviceEntity getDevice(String device_id) {

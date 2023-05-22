@@ -30,7 +30,7 @@ import okhttp3.Response;
 
 public abstract class BaseApi<T> {
     static OkHttpClient client = null;
-    static String host = "https://10.0.2.2:4433/api";
+    static String host = "https://192.168.100.121:4433/api";
 
     final ObjectMapper mapper = new ObjectMapper();
 
