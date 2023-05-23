@@ -1,8 +1,6 @@
 package com.bbudzowski.homeautoandroid;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.Menu;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

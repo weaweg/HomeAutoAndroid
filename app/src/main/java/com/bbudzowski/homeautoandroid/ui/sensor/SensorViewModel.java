@@ -13,8 +13,8 @@ import java.util.List;
 public class SensorViewModel extends ViewModel {
     private final MutableLiveData<List<SensorEntity>> sensors = new MutableLiveData<>();
 
-    public SensorViewModel(InputStream keyFile) {
-        sensors.setValue(new SensorApi(keyFile).getSensors());
+    public SensorViewModel() {
+        sensors.setValue(new SensorApi().getSensors());
     }
     public LiveData<List<SensorEntity>> getSensors() {
         return sensors;

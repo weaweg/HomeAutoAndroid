@@ -13,4 +13,8 @@
     <string name="menu_sensors">Sensors</string>
 
     <string name="no_results">No results</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">login</string>
+    <string name="login_title">HomeAI \n Management App</string>
 </resources>

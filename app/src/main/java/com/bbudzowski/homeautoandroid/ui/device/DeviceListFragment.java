@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
@@ -23,9 +23,8 @@ public class DeviceListFragment extends ListFragment<DeviceEntity> {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        DeviceListViewModel deviceListViewModel = new DeviceListViewModel(
-                getResources().openRawResource(R.raw.server_ts));
-                //new ViewModelProvider(this).get(DeviceViewModel.class, );
+        DeviceListViewModel deviceListViewModel =
+                new ViewModelProvider(this).get(DeviceListViewModel.class);
 
         binding = FragmentListBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();

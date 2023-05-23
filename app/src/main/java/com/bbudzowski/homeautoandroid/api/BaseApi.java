@@ -30,26 +30,23 @@ import okhttp3.Response;
 
 public abstract class BaseApi<T> {
     static OkHttpClient client = null;
-    static String host = "https://192.168.100.121:4433/api";
-
+    static final String host = "https://weaweg.mywire.org:4433/api";
     final ObjectMapper mapper = new ObjectMapper();
 
-    BaseApi(InputStream keyFile) {
-        if(client == null)
-            createClient(keyFile);
-    }
-
-    private void createClient(InputStream keyFile) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.hostnameVerifier((hostname, session) -> true);
-        builder.authenticator((route, response) -> {
-            if (responseCount(response) >= 3) {
-                return null;
-            }
-            String credential = Credentials.basic("bbudzowski", "tial2o3");
-            return response.request().newBuilder().header("Authorization", credential).build();
-        });
+    public static boolean createClient(InputStream keyFile, String username, String password) {
         try {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.hostnameVerifier((hostname, session) -> true);
+            builder.authenticator((route, response) -> {
+                Response tmp = response;
+                for(int i = 0; tmp != null; ++i) {
+                    tmp = tmp.priorResponse();
+                    if(i >=3)
+                        return null;
+                }
+                String credential = Credentials.basic(username, password);
+                return response.request().newBuilder().header("Authorization", credential).build();
+            });
             KeyStore myTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             System.out.println(KeyStore.getDefaultType());
             myTrustStore.load(keyFile, "tial2o3".toCharArray());
@@ -74,17 +71,11 @@ public abstract class BaseApi<T> {
             builder.writeTimeout(10, TimeUnit.SECONDS);
             builder.readTimeout(30, TimeUnit.SECONDS);
             client = new OkHttpClient(builder);
+            return true;
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException |
                  CertificateException | IOException e) {
-            throw new RuntimeException(e);
+            return false;
         }
-    }
-    private int responseCount (Response response){
-        int result = 1;
-        while ((response = response.priorResponse()) != null) {
-            result++;
-        }
-        return result;
     }
 
     Response getResponse(String url) {

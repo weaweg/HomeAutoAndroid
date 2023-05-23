@@ -17,8 +17,7 @@ public class DeviceApi extends BaseApi<DeviceEntity>  {
     private final String base_url = host + "/device";
     private final JavaType type;
 
-    public DeviceApi(InputStream keyFile) {
-        super(keyFile);
+    public DeviceApi() {
         type = mapper.getTypeFactory().
                 constructCollectionType(List.class, DeviceEntity.class);
     }

@@ -13,8 +13,8 @@ import java.util.List;
 public class DeviceListViewModel extends ViewModel {
     private final MutableLiveData<List<DeviceEntity>> devices = new MutableLiveData<>();
 
-    public DeviceListViewModel(InputStream keyFile) {
-        devices.setValue(new DeviceApi(keyFile).getDevices());
+    public DeviceListViewModel() {
+        devices.setValue(new DeviceApi().getDevices());
     }
     public LiveData<List<DeviceEntity>> getDevices() {
         return devices;
