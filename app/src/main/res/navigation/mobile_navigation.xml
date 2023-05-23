@@ -3,17 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/nav_home">
-
-    <fragment
-        android:id="@+id/nav_device"
-        android:name="com.bbudzowski.homeautoandroid.ui.device.DeviceUnitFragment"
-        android:label="@string/menu_device" />
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="com.bbudzowski.homeautoandroid.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+    app:startDestination="@id/nav_devices">
 
     <fragment
         android:id="@+id/nav_devices"
@@ -22,7 +12,7 @@
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/nav_sensors"
-        android:name="com.bbudzowski.homeautoandroid.ui.sensor.SensorFragment"
+        android:name="com.bbudzowski.homeautoandroid.ui.sensor.SensorListFragment"
         android:label="@string/menu_sensors" />
 
 </navigation>

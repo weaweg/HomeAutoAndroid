@@ -8,9 +8,7 @@ public class SensorEntity {
     public Integer data_type;
     public Integer current_state;
     public String units;
-    public String name;
-    public String location;
-    public Timestamp m_time;
-    public Float value;
+    public DeviceEntity device;
+    public MeasurementEntity lastMeasurement;
 
 }

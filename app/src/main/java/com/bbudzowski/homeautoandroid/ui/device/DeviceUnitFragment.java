@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bbudzowski.homeautoandroid.databinding.FragmentUnitBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
@@ -22,7 +21,7 @@ public class DeviceUnitFragment extends UnitFragment<DeviceEntity> {
                              ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
         DeviceUnitViewModel deviceUnitViewModel =
-                new ViewModelProvider(this).get(DeviceUnitViewModel.class);
+                new DeviceUnitViewModel(args.getString("device_id"));
 
         binding = FragmentUnitBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();

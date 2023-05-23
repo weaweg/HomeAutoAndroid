@@ -1,5 +1,7 @@
 package com.bbudzowski.homeautoandroid.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +41,7 @@ public abstract class BaseApi<T> {
             builder.hostnameVerifier((hostname, session) -> true);
             builder.authenticator((route, response) -> {
                 Response tmp = response;
-                for(int i = 0; tmp != null; ++i) {
+                for(int i = 0; tmp != null; ++i)  {
                     tmp = tmp.priorResponse();
                     if(i >=3)
                         return null;
@@ -78,13 +80,21 @@ public abstract class BaseApi<T> {
         }
     }
 
+    public static Response dummyRequest() {
+        Request request = new Request.Builder().get().url(host).build();
+        try {
+            return client.newCall(request).execute();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     Response getResponse(String url) {
         Request request = new Request.Builder().get().url(url).build();
         try {
             return client.newCall(request).execute();
         } catch (Exception e) {
-            //return null;
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -106,9 +116,9 @@ public abstract class BaseApi<T> {
         }
     }
 
-    T getSingleResult(Response res) {
+    T getSingleResult(Response res, JavaType type) {
         try {
-            return mapper.readValue(res.body().string(), new TypeReference<>() {});
+            return mapper.readValue(res.body().string(), type);
         } catch (Exception e) {
             return null;
         }

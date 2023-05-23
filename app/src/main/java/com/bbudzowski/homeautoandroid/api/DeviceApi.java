@@ -5,6 +5,7 @@ import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.SimpleType;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -15,26 +16,23 @@ import okhttp3.internal.http.HttpStatusCodesKt;
 
 public class DeviceApi extends BaseApi<DeviceEntity>  {
     private final String base_url = host + "/device";
+    private final JavaType listType;
     private final JavaType type;
 
     public DeviceApi() {
-        type = mapper.getTypeFactory().
+        listType = mapper.getTypeFactory().
                 constructCollectionType(List.class, DeviceEntity.class);
+        type = mapper.constructType(DeviceEntity.class);
     }
 
     public List<DeviceEntity> getDevices() {
         Response res = getResponse(base_url + "/all");
-        return getResultList(res, type);
+        return getResultList(res, listType);
     }
 
     public DeviceEntity getDevice(String device_id) {
-        //Response res = getResponse(base_url + "?device_id = " + device_id);
-        //return getSingleResult(res);
-        DeviceEntity dev = new DeviceEntity();
-        dev.device_id = device_id;
-        dev.name = "name";
-        dev.location = "location";
-        return dev;
+        Response res = getResponse(base_url + "?device_id=" + device_id);
+        return getSingleResult(res, type);
     }
 
     private int updateDevice(DeviceEntity device) {
