@@ -13,6 +13,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,6 @@ public abstract class BaseApi<T> {
                 return response.request().newBuilder().header("Authorization", credential).build();
             });
             KeyStore myTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            System.out.println(KeyStore.getDefaultType());
             myTrustStore.load(keyFile, "tial2o3".toCharArray());
             keyFile.close();
 
@@ -119,6 +119,15 @@ public abstract class BaseApi<T> {
     T getSingleResult(Response res, JavaType type) {
         try {
             return mapper.readValue(res.body().string(), type);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    Timestamp getUpdateTime(Response res) {
+        try {
+            return Timestamp.valueOf(mapper.readTree(
+                    res.body().string()).path("desc").asText());
         } catch (Exception e) {
             return null;
         }

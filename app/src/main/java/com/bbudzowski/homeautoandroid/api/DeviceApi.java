@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class DeviceApi extends BaseApi<DeviceEntity>  {
         listType = mapper.getTypeFactory().
                 constructCollectionType(List.class, DeviceEntity.class);
         type = mapper.constructType(DeviceEntity.class);
+    }
+
+    public Timestamp getUpdateTime(){
+        Response res = getResponse(base_url + "/updateTime");
+        return getUpdateTime(res);
     }
 
     public List<DeviceEntity> getDevices() {

@@ -1,6 +1,8 @@
 package com.bbudzowski.homeautoandroid.ui.sensor;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,25 +13,79 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bbudzowski.homeautoandroid.R;
+import com.bbudzowski.homeautoandroid.api.DeviceApi;
+import com.bbudzowski.homeautoandroid.api.MeasurementApi;
+import com.bbudzowski.homeautoandroid.api.SensorApi;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimerTask;
 
 public class SensorListFragment extends ListFragment {
+    private final SensorApi sensorApi = new SensorApi();
+    private final DeviceApi deviceApi = new DeviceApi();
+    private final MeasurementApi measApi = new MeasurementApi();
+    private List<SensorEntity> sensors;
 
-    private FragmentListBinding binding;
+    public SensorListFragment() {
+        getSensors();
+        lastUpdateTime = sensorApi.getUpdateTime();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        SensorListViewModel sensorListViewModel =
-                new ViewModelProvider(this).get(SensorListViewModel.class);
-
         binding = FragmentListBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();
-        final Observer<List<SensorEntity>> sensorObserver = sensors -> {
+        createUi(root);
+        handler = new Handler(Looper.getMainLooper(), msg -> {
+            root.removeAllViews();
+            createUi(root);
+            return false;
+        });
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Timestamp updateTimeSensor = sensorApi.getUpdateTime();
+                Timestamp updateTimeDevice = deviceApi.getUpdateTime();
+                Timestamp updateTimeMeasurement = measApi.getUpdateTime();
+                Timestamp updateTime;
+                if(updateTimeSensor.compareTo(updateTimeDevice) > 0) {
+                    if (updateTimeSensor.compareTo(updateTimeMeasurement) > 0)
+                        updateTime = updateTimeSensor;
+                    else
+                        updateTime = updateTimeMeasurement;
+                } else
+                    if(updateTimeDevice.compareTo(updateTimeMeasurement) > 0)
+                        updateTime = updateTimeDevice;
+                    else
+                        updateTime = updateTimeMeasurement;
+                if (lastUpdateTime != null && lastUpdateTime.compareTo(updateTime) >= 0)
+                    return;
+                getSensors();
+                handler.obtainMessage(0).sendToTarget();
+                lastUpdateTime = updateTime;
+            }
+        };
+        return root;
+    }
+
+    private void getSensors() {
+        sensors = sensorApi.getSensors();
+        for(SensorEntity sens : sensors) {
+            sens.device = deviceApi.getDevice(sens.device_id);
+            sens.lastMeasurement = measApi.
+                    getLastMeasurementForSensor(sens.device_id, sens.sensor_id);
+        }
+    }
+
+    private void createUi(ConstraintLayout root) {
         if (sensors == null || sensors.size() == 0) {
             handleError(root, getString(R.string.no_results));
             return;
@@ -41,25 +97,32 @@ public class SensorListFragment extends ListFragment {
             view.setLayoutParams(new ConstraintLayout.LayoutParams(0, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         }
         constraintViewsToRoot(root);
-    };
-        sensorListViewModel.getSensors().observe(getViewLifecycleOwner(), sensorObserver);
-        return root;
     }
 
     private ConstraintLayout createSensorView(View root, SensorEntity sens) {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        addTextView(view, sens.device.name, "sensName");
         if(sens.device.location == null)
-            sens.device.location = "brak lokacji";
-        addTextView(view, sens.device.location, "sensLoc");
+            sens.device.location = "Brak lokacji";
+        String sensName = sens.device.location;
+        if(sens.device.name != null)
+            sensName = sensName + " - " +sens.device.name;
+        addTextView(view, sensName, "sensName", 24f, R.color.teal_700);
         if(sens.data_type == 0) {
             if(sens.lastMeasurement != null) {
-                addTextView(view, sens.lastMeasurement.val.toString(), "sensVal");
-                addTextView(view, sens.lastMeasurement.m_time.toString(), "sensTime");
+                addTextView(view, sens.lastMeasurement.val.toString() + sens.units,
+                        "sensVal", 24f, R.color.teal_200);
+                String mTime = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss",
+                        Locale.getDefault()).format(sens.lastMeasurement.m_time);
+                addTextView(view, mTime, "sensTime", 24f, R.color.teal_200);
             }
         } else {
-            addTextView(view, sens.current_state.toString(), "sensState");
+            String currentState;
+            if(sens.current_state == 0)
+                currentState = "Wyłączony";
+            else
+                currentState = "Włączony";
+            addTextView(view, currentState,"sensState", 24f, R.color.teal_200);
         }
         constraintTextToView(view);
         view.setOnClickListener(onSensorClick(sens.device_id, sens.sensor_id));
