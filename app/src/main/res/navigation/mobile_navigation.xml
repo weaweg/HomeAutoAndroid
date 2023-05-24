@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/nav_devices"
-        android:name="com.bbudzowski.homeautoandroid.ui.device.DeviceListFragment"
+        android:name="com.bbudzowski.homeautoandroid.ui.device.list.DeviceListFragment"
         android:label="@string/menu_devices"
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/nav_sensors"
-        android:name="com.bbudzowski.homeautoandroid.ui.sensor.SensorListFragment"
+        android:name="com.bbudzowski.homeautoandroid.ui.sensor.list.SensorListFragment"
         android:label="@string/menu_sensors" />
 
 </navigation>

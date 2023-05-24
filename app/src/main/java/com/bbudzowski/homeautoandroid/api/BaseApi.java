@@ -1,8 +1,5 @@
 package com.bbudzowski.homeautoandroid.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,10 +28,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public abstract class BaseApi<T> {
-    static OkHttpClient client = null;
-    static final String host = "https://weaweg.mywire.org:4433/api";
-    final ObjectMapper mapper = new ObjectMapper();
+public abstract class BaseApi {
+    private static OkHttpClient client = null;
+    public static final String host = "https://weaweg.mywire.org:4433/api";
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     public static boolean createClient(InputStream keyFile, String username, String password) {
         try {
@@ -89,7 +86,7 @@ public abstract class BaseApi<T> {
         }
     }
 
-    Response getResponse(String url) {
+    public static Response getResponse(String url) {
         Request request = new Request.Builder().get().url(url).build();
         try {
             return client.newCall(request).execute();
@@ -98,7 +95,7 @@ public abstract class BaseApi<T> {
         }
     }
 
-    Response postResponse(String url, String bodyString) {
+    public static Response postResponse(String url, String bodyString) {
         RequestBody body = RequestBody.create(bodyString, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder().post(body).url(url).build();
         try {
@@ -108,7 +105,7 @@ public abstract class BaseApi<T> {
         }
     }
 
-    List<T> getResultList(Response res, JavaType type) {
+    public static List<?> getResultList(Response res, JavaType type) {
         try {
             return mapper.readValue(res.body().string(), type);
         } catch (Exception e) {
@@ -116,7 +113,7 @@ public abstract class BaseApi<T> {
         }
     }
 
-    T getSingleResult(Response res, JavaType type) {
+    public static Object getSingleResult(Response res, JavaType type) {
         try {
             return mapper.readValue(res.body().string(), type);
         } catch (Exception e) {
@@ -124,7 +121,7 @@ public abstract class BaseApi<T> {
         }
     }
 
-    Timestamp getUpdateTime(Response res) {
+    public static Timestamp getUpdateTime(Response res) {
         try {
             return Timestamp.valueOf(mapper.readTree(
                     res.body().string()).path("desc").asText());

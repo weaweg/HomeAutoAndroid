@@ -1,22 +1,22 @@
-package com.bbudzowski.homeautoandroid.ui.device;
+package com.bbudzowski.homeautoandroid.ui.device.list;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.bbudzowski.homeautoandroid.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
-import com.bbudzowski.homeautoandroid.api.DeviceApi;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
+import com.bbudzowski.homeautoandroid.ui.device.unit.DeviceUnitFragment;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -24,43 +24,42 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class DeviceListFragment extends ListFragment {
-    private final DeviceApi deviceApi = new DeviceApi();
-    private List<DeviceEntity> devices;
-
-    public DeviceListFragment() {
-        devices = deviceApi.getDevices();
-        lastUpdateTime = deviceApi.getUpdateTime();
-    }
+    private MainActivity mainActivity;
+    private DeviceListViewModel model;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
+        mainActivity = ((MainActivity) getActivity());
         binding = FragmentListBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();
-        createUi(root);
-        handler = new Handler(Looper.getMainLooper(), msg -> {
+        model = new ViewModelProvider(this).get(DeviceListViewModel.class);
+        model.setDevices(mainActivity);
+        final Observer<List<DeviceEntity>> devicesObserver = devices -> {
             root.removeAllViews();
-            createUi(root);
-            return false;
-        });
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("timer");
-                Timestamp updateTime = deviceApi.getUpdateTime();
-                if (updateTime == null ||
-                        (lastUpdateTime != null && lastUpdateTime.compareTo(updateTime) >= 0))
-                    return;
-                devices = deviceApi.getDevices();
-                handler.obtainMessage(0).sendToTarget();
-                lastUpdateTime = updateTime;
-            }
+            createDevicesUi(root, devices);
         };
+        model.getDevices().observe(getViewLifecycleOwner(), devicesObserver);
         return root;
     }
 
-    private void createUi(ConstraintLayout root) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateTimer = new Timer();
+        updateTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Timestamp updateTime = mainActivity.getDevicesLastUpdate();
+                if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
+                    model.getDevices().setValue(mainActivity.getDevices());
+                    model.setLastUpdateTime(updateTime);
+                }
+            }
+        }, 0, updatePeriod);
+    }
+
+    private void createDevicesUi(ConstraintLayout root, List<DeviceEntity> devices) {
         if (devices == null || devices.size() == 0) {
             handleError(root, getString(R.string.no_results));
             return;
@@ -92,11 +91,5 @@ public class DeviceListFragment extends ListFragment {
             bundle.putString("device_id", device_id);
             replaceFragment(new DeviceUnitFragment(), bundle);
         };
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 }

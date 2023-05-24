@@ -8,22 +8,25 @@ import java.util.List;
 
 import okhttp3.Response;
 
-public class SensorApi extends BaseApi<SensorEntity> {
+public abstract class SensorApi extends BaseApi {
+    private static final String base_url = host + "/sensor";
+    private static final JavaType listType = mapper.getTypeFactory().
+            constructCollectionType(List.class, SensorEntity.class);
+    private static final JavaType type = mapper.constructType(SensorEntity.class);
 
-    private final String base_url = host + "/sensor";
-    private final JavaType type;
-
-    public SensorApi() {
-        type = mapper.getTypeFactory().
-                constructCollectionType(List.class, SensorEntity.class);
-    }
-    public Timestamp getUpdateTime(){
+    public static Timestamp getUpdateTime(){
         Response res = getResponse(base_url + "/updateTime");
         return getUpdateTime(res);
     }
 
-    public List<SensorEntity> getSensors() {
+    public static List<SensorEntity> getSensors() {
         Response res = getResponse(base_url + "/all");
-        return getResultList(res, type);
+        return (List<SensorEntity>) getResultList(res, listType);
+    }
+
+    public static SensorEntity getSensor(String device_id, String sensor_id) {
+        Response res = getResponse(
+                base_url + "?device_id=" + device_id + "&sensor_id=" + sensor_id);
+        return (SensorEntity) getSingleResult(res, type);
     }
 }

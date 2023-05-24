@@ -1,21 +1,14 @@
 package com.bbudzowski.homeautoandroid.ui;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -25,26 +18,26 @@ import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 
 import java.sql.Timestamp;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class ListFragment extends Fragment {
     protected FragmentListBinding binding;
-    protected Timestamp lastUpdateTime;
-    protected Handler handler;
-    private Timer updateTimer;
-    protected TimerTask timerTask;
+    protected Timer updateTimer;
+    protected int updatePeriod = 2000;
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateTimer = new Timer();
-        //updateTimer.schedule(timerTask, 0, 2000);
-    }
+    private Timestamp devicesLastUpdate = null;
+    private Timestamp sensorsLastUpdate = null;
+    private Timestamp automatonsLastUpdate = null;
 
     @Override
     public void onPause() {
         super.onPause();
         updateTimer.cancel();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     protected void handleError(ConstraintLayout root, String text) {
@@ -71,17 +64,15 @@ public abstract class ListFragment extends Fragment {
 
     protected void constraintViewsToRoot(ConstraintLayout root) {
         ConstraintSet set = new ConstraintSet();
-        float px = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics());
         set.clone(root);
         int childId = root.getChildAt(0).getId();
-        set.connect(childId, ConstraintSet.TOP, root.getId(), ConstraintSet.TOP, (int) px);
+        set.connect(childId, ConstraintSet.TOP, root.getId(), ConstraintSet.TOP, 50);
         set.center(childId, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0,
                 ConstraintSet.PARENT_ID, ConstraintSet.RIGHT, 0, .5f);
         set.constrainPercentWidth(childId, .8f);
         for(int i = 1; i < root.getChildCount(); ++i) {
             int nextChildId = root.getChildAt(i).getId();
-            set.connect(nextChildId, ConstraintSet.TOP, childId, ConstraintSet.BOTTOM, (int) px);
+            set.connect(nextChildId, ConstraintSet.TOP, childId, ConstraintSet.BOTTOM, 50);
             set.center(nextChildId, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0,
                     ConstraintSet.PARENT_ID, ConstraintSet.RIGHT, 0, .5f);
             set.constrainPercentWidth(nextChildId, .8f);
@@ -97,7 +88,7 @@ public abstract class ListFragment extends Fragment {
         Typeface typeface = Typeface.create("sans-serif-black", Typeface.BOLD);
         textView.setTypeface(typeface);
         textView.setTextSize(textSize);
-        textView.setTextColor(getResources().getColor(color, null));
+        textView.setTextColor(view.getContext().getResources().getColor(color, null));
         textView.setId(id.hashCode());
         view.addView(textView);
         textView.setLayoutParams(new LayoutParams(

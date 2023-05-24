@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoandroid.ui.device;
+package com.bbudzowski.homeautoandroid.ui.device.unit;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.Observer;
 
 import com.bbudzowski.homeautoandroid.databinding.FragmentUnitBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
@@ -20,14 +19,10 @@ public class DeviceUnitFragment extends UnitFragment<DeviceEntity> {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
-        DeviceUnitViewModel deviceUnitViewModel =
-                new DeviceUnitViewModel(args.getString("device_id"));
 
         binding = FragmentUnitBinding.inflate(inflater, container, false);
         ConstraintLayout root = binding.getRoot();
-        final Observer<DeviceEntity> deviceObserver =
-                dev -> updateUI(root, dev);
-        deviceUnitViewModel.getDevice().observe(getViewLifecycleOwner(), deviceObserver);
+
         return root;
     }
 

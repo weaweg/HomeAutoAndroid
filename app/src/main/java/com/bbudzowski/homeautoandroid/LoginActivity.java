@@ -7,16 +7,13 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import com.bbudzowski.homeautoandroid.api.BaseApi;
 import com.bbudzowski.homeautoandroid.databinding.ActivityLoginBinding;
 import com.google.android.material.snackbar.Snackbar;
 
-import okhttp3.Response;
-
 import java.io.InputStream;
+
+import okhttp3.Response;
 
 public class LoginActivity extends Activity {
     

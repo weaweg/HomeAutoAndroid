@@ -1,6 +1,5 @@
 package com.bbudzowski.homeautoandroid.tables;
 
-import java.sql.Timestamp;
 
 public class SensorEntity {
     public String device_id;

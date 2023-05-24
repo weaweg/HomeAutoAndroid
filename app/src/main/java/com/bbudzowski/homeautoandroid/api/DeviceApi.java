@@ -1,47 +1,35 @@
 package com.bbudzowski.homeautoandroid.api;
 
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
-import com.bbudzowski.homeautoandroid.tables.SensorEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.type.SimpleType;
 
-import java.io.InputStream;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
-import okhttp3.internal.http.HttpStatusCodesKt;
 
-public class DeviceApi extends BaseApi<DeviceEntity>  {
-    private final String base_url = host + "/device";
-    private final JavaType listType;
-    private final JavaType type;
+public abstract class DeviceApi extends BaseApi {
+    private static final String base_url = host + "/device";
+    private static final JavaType listType = mapper.getTypeFactory().
+            constructCollectionType(List.class, DeviceEntity.class);
+    private static final JavaType type = mapper.constructType(DeviceEntity.class);
 
-    public DeviceApi() {
-        listType = mapper.getTypeFactory().
-                constructCollectionType(List.class, DeviceEntity.class);
-        type = mapper.constructType(DeviceEntity.class);
-    }
-
-    public Timestamp getUpdateTime(){
+    public static Timestamp getUpdateTime(){
         Response res = getResponse(base_url + "/updateTime");
         return getUpdateTime(res);
     }
 
-    public List<DeviceEntity> getDevices() {
+    public static List<DeviceEntity> getDevices() {
         Response res = getResponse(base_url + "/all");
-        return getResultList(res, listType);
+        return (List<DeviceEntity>) getResultList(res, listType);
     }
 
-    public DeviceEntity getDevice(String device_id) {
+    public static DeviceEntity getDevice(String device_id) {
         Response res = getResponse(base_url + "?device_id=" + device_id);
-        return getSingleResult(res, type);
+        return (DeviceEntity) getSingleResult(res, type);
     }
 
-    private int updateDevice(DeviceEntity device) {
+    /*private int updateDevice(DeviceEntity device) {
         ObjectNode json = mapper.createObjectNode();
         json.put("device_id", device.device_id);
         json.put("name", device.name);
@@ -55,5 +43,5 @@ public class DeviceApi extends BaseApi<DeviceEntity>  {
         try (Response res = postResponse(base_url + "/update", bodyString)) {
             return res.code();
         }
-    }
+    }*/
 }
