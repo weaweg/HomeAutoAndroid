@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
+                navController.popBackStack();
                 navController.navigate(R.id.nav_devices);
             }
         };
