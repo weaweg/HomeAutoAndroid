@@ -15,7 +15,7 @@ public abstract class AutomatonApi extends BaseApi{
     private static final JavaType type = mapper.constructType(AutomatonEntity.class);
 
     public static Timestamp getUpdateTime() {
-        Response res = getResponse(base_url + "/updateTime");
+        Response res = getResponse(base_url + "/update_time");
         return getUpdateTime(res);
     }
 

@@ -15,7 +15,7 @@ public abstract class SensorApi extends BaseApi {
     private static final JavaType type = mapper.constructType(SensorEntity.class);
 
     public static Timestamp getUpdateTime(){
-        Response res = getResponse(base_url + "/updateTime");
+        Response res = getResponse(base_url + "/update_time");
         return getUpdateTime(res);
     }
 

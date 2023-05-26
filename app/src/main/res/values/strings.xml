@@ -9,6 +9,7 @@
 
     <string name="menu_devices">Urządzenia</string>
     <string name="menu_sensors">Czujniki</string>
+    <string name="menu_load">Ładowanie</string>
 
     <string name="no_results">Brak wyników</string>
     <string name="username">Użytkownik</string>

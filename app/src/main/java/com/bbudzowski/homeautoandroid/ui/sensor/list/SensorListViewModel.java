@@ -4,9 +4,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.bbudzowski.homeautoandroid.MainActivity;
-import com.bbudzowski.homeautoandroid.api.DeviceApi;
-import com.bbudzowski.homeautoandroid.api.MeasurementApi;
-import com.bbudzowski.homeautoandroid.api.SensorApi;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 
 import java.sql.Timestamp;
@@ -21,15 +18,16 @@ public class SensorListViewModel extends ViewModel {
     }
 
     public void setSensors(MainActivity mainActivity) {
-        this.sensors = new MutableLiveData<>();
-        List<SensorEntity> sensors = mainActivity.getSensors();
-        for(SensorEntity sens : sensors) {
-            sens.device = mainActivity.getDevice(sens.device_id);
-            sens.lastMeasurement = MeasurementApi.
-                    getLastMeasurementForSensor(sens.device_id, sens.sensor_id);
-        }
-        this.sensors.setValue(sensors);
+        sensors = new MutableLiveData<>();
+        sensors.setValue(genSensorsData(mainActivity));
         lastUpdateTime = mainActivity.getLastUpdateTime();
+    }
+
+    public List<SensorEntity> genSensorsData(MainActivity mainActivity) {
+        List<SensorEntity> sensors = mainActivity.getSensors();
+        for(SensorEntity sens : sensors)
+            sens.device = mainActivity.getDevice(sens.device_id);
+        return sensors;
     }
 
     public Timestamp getLastUpdateTime() {

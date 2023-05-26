@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoandroid.ui.device.unit;
+package com.bbudzowski.homeautoandroid.ui.device.list.unit;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

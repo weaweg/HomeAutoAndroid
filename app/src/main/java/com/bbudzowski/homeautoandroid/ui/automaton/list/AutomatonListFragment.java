@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bbudzowski.homeautoandroid.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
-import com.bbudzowski.homeautoandroid.api.MeasurementApi;
 import com.bbudzowski.homeautoandroid.api.SensorApi;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
@@ -52,6 +51,8 @@ public class AutomatonListFragment extends ListFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getAutomatonsLastUpdate();
+                if(updateTime == null)
+                    return;
                 if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
                     model.getAutomatons().setValue(mainActivity.getAutomatons());
                     model.setLastUpdateTime(updateTime);
@@ -63,8 +64,6 @@ public class AutomatonListFragment extends ListFragment {
     private void setAutomatons(List<AutomatonEntity> automatons) {
         for(AutomatonEntity auto : automatons) {
             auto.sens = SensorApi.getSensor(auto.device_id_sens, auto.sensor_id_sens);
-            auto.sens.lastMeasurement = MeasurementApi.
-                    getLastMeasurementForSensor(auto.device_id_sens, auto.sensor_id_sens);
             auto.acts = SensorApi.getSensor(auto.device_id_acts, auto.sensor_id_acts);
         }
     }
@@ -87,10 +86,10 @@ public class AutomatonListFragment extends ListFragment {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
 
-        addTextView(view, automaton.name, "autoName", 24f, R.color.teal_700);
+        addTextView(view, automaton.name, 24f, R.color.teal_700);
         //addTextView(view, automaton., "autoSensName", 20f, R.color.teal_700);
-        addTextView(view, "Próg: " + automaton.val + "Histereza: " + automaton.hysteresis,
-                "autoVal", 20f, R.color.teal_700);
+        addTextView(view,"Górny próg: " + automaton.val_top +
+                        "Dolny próg: " + automaton.val_bot,20f, R.color.teal_700);
 
 
         constraintTextToView(view);

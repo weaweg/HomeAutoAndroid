@@ -1,8 +1,12 @@
 package com.bbudzowski.homeautoandroid;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -24,6 +28,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
@@ -34,21 +40,13 @@ public class MainActivity extends AppCompatActivity {
     private Timestamp devicesLastUpdate;
     private Timestamp sensorsLastUpdate;
     private Timestamp automatonsLastUpdate;
-    public MainActivity() {
-        devices = DeviceApi.getDevices();
-        sensors = SensorApi.getSensors();
-        automatons = AutomatonApi.getAutomatons();
-        devicesLastUpdate = DeviceApi.getUpdateTime();
-        sensorsLastUpdate = SensorApi.getUpdateTime();
-        automatonsLastUpdate = AutomatonApi.getUpdateTime();
-    }
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.bbudzowski.homeautoandroid.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.hide();
         binding.appBarMain.fab.setOnClickListener(view ->
@@ -59,17 +57,32 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_devices, R.id.nav_sensors)
+                R.id.nav_devices, R.id.nav_sensors, R.id.nav_load)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                navController.navigate(R.id.nav_devices);
+            }
+        };
+        Executors.newSingleThreadExecutor().execute(this::getAllData);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void getAllData () {
+        devices = DeviceApi.getDevices();
+        sensors = SensorApi.getSensors();
+        automatons = AutomatonApi.getAutomatons();
+        devicesLastUpdate = DeviceApi.getUpdateTime();
+        if(devicesLastUpdate == null) devicesLastUpdate = new Timestamp(0);
+        sensorsLastUpdate = SensorApi.getUpdateTime();
+        if(sensorsLastUpdate == null) sensorsLastUpdate = new Timestamp(0);
+        automatonsLastUpdate = AutomatonApi.getUpdateTime();
+        if(automatonsLastUpdate == null) automatonsLastUpdate = new Timestamp(0);
+        handler.sendEmptyMessage(0);
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -89,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     automatons = AutomatonApi.getAutomatons();
                     automatonsLastUpdate = updateTimeAutomaton;
                 }
+
             }
         };
         updateTimer = new Timer();
@@ -171,4 +185,5 @@ public class MainActivity extends AppCompatActivity {
             updateTime = automatonsLastUpdate;
         return updateTime;
     }
+
 }

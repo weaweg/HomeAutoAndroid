@@ -12,7 +12,6 @@ import java.util.List;
 public class DeviceListViewModel extends ViewModel {
     private MutableLiveData<List<DeviceEntity>> devices;
     private Timestamp lastUpdateTime;
-
     public MutableLiveData<List<DeviceEntity>> getDevices() {
         return devices;
     }
@@ -21,6 +20,8 @@ public class DeviceListViewModel extends ViewModel {
         devices = new MutableLiveData<>();
         devices.setValue(mainActivity.getDevices());
         lastUpdateTime = mainActivity.getDevicesLastUpdate();
+        if(lastUpdateTime == null)
+            lastUpdateTime = new Timestamp(0);
     }
 
     public Timestamp getLastUpdateTime() {

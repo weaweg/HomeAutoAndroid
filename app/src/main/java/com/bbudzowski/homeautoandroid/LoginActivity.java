@@ -16,8 +16,8 @@ import java.io.InputStream;
 import okhttp3.Response;
 
 public class LoginActivity extends Activity {
-    
     private ActivityLoginBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,13 +48,14 @@ public class LoginActivity extends Activity {
                 if(resp.code() == 401)
                     Snackbar.make(root, "Niepoprawne dane logowania", Snackbar.LENGTH_SHORT).show();
                 else
-                    Snackbar.make(root, "Nieznany błąd", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(root, "Wewnętrzny błąd serwera", Snackbar.LENGTH_SHORT).show();
                 return;
             }
         }
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
+
+
 
 }

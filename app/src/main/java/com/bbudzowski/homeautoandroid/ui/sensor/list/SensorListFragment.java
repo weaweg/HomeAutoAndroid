@@ -12,10 +12,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bbudzowski.homeautoandroid.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
-import com.bbudzowski.homeautoandroid.api.MeasurementApi;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
+
+import org.json.JSONException;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -38,7 +39,6 @@ public class SensorListFragment extends ListFragment {
         model.setSensors(mainActivity);
         final Observer<List<SensorEntity>> sensorObserver = sensors -> {
             root.removeAllViews();
-            setSensors(sensors);
             createSensorsUi(root, sensors);
         };
         model.getSensors().observe(getViewLifecycleOwner(), sensorObserver);
@@ -52,30 +52,15 @@ public class SensorListFragment extends ListFragment {
         updateTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Timestamp tmp = model.getLastUpdateTime();
-                if(mainActivity.getDevicesLastUpdate().compareTo(tmp) > 0)
-                    tmp = mainActivity.getDevicesLastUpdate();
-                if(mainActivity.getSensorsLastUpdate().compareTo(tmp) > 0)
-                    tmp = mainActivity.getSensorsLastUpdate();
-
-
-
-
-                    model.getSensors().setValue(mainActivity.getSensors());
-                    updateTimeTmp = mainActivity.getSensorsLastUpdate();
+                Timestamp updateTime = mainActivity.getSensorsLastUpdate();
+                if(mainActivity.getDevicesLastUpdate().compareTo(updateTime) > 0)
+                    updateTime = mainActivity.getDevicesLastUpdate();
+                if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
+                    model.getSensors().setValue(model.genSensorsData(mainActivity));
+                    model.setLastUpdateTime(updateTime);
                 }
-                if(tmp)
-
             }
         }, 0, updatePeriod);
-    }
-
-    private void setSensors(List<SensorEntity> sensors) {
-        for(SensorEntity sens : sensors) {
-            //sens.device = mainActivity.getDevices().
-            sens.lastMeasurement = MeasurementApi.
-                    getLastMeasurementForSensor(sens.device_id, sens.sensor_id);
-        }
     }
 
     private void createSensorsUi(ConstraintLayout root, List<SensorEntity> sensors) {
@@ -85,7 +70,7 @@ public class SensorListFragment extends ListFragment {
         }
         for (int i = 0; i < sensors.size(); ++i) {
             ConstraintLayout view = createSensorView(root, sensors.get(i));
-            view.setId(("box" + i).hashCode());
+            view.setId(View.generateViewId());
             root.addView(view);
             view.setLayoutParams(new ConstraintLayout.LayoutParams(0, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         }
@@ -97,25 +82,24 @@ public class SensorListFragment extends ListFragment {
         view.setBackgroundResource(R.drawable.layout_border);
         if(sens.device.location == null)
             sens.device.location = "Brak lokacji";
-        String sensName = sens.device.location;
-        if(sens.device.name != null)
-            sensName = sensName + " - " +sens.device.name;
-        addTextView(view, sensName, "sensName", 24f, R.color.teal_700);
-        if(sens.data_type == 0) {
-            if(sens.lastMeasurement != null) {
-                addTextView(view, sens.lastMeasurement.val.toString() + sens.units,
-                        "sensVal", 24f, R.color.teal_200);
-                String mTime = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss",
-                        Locale.getDefault()).format(sens.lastMeasurement.m_time);
-                addTextView(view, mTime, "sensTime", 24f, R.color.teal_200);
-            }
+        if(sens.name == null)
+            sens.name = "Nowe urządzenie";
+        String sensTitle = sens.name + " - " + sens.device.location;
+        addTextView(view, sensTitle,24f, R.color.teal_700);
+        if(!sens.discrete) {
+            String unit;
+            try { unit = sens.json_desc.getString("unit");
+            } catch (JSONException e) { unit = ""; }
+            addTextView(view, sens.current_val.toString() + unit,
+                    24f, R.color.teal_200);
+            String mTime = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss",
+                    Locale.getDefault()).format(sens.m_time);
+            addTextView(view, mTime,24f, R.color.teal_200);
         } else {
-            String currentState;
-            if(sens.current_state == 0)
-                currentState = "Wyłączony";
-            else
-                currentState = "Włączony";
-            addTextView(view, currentState,"sensState", 24f, R.color.teal_200);
+            String stateDesc;
+            try { stateDesc = sens.json_desc.getString(sens.current_val.toString());
+            } catch (JSONException e) { stateDesc = ""; }
+            addTextView(view, stateDesc,24f, R.color.teal_200);
         }
         constraintTextToView(view);
         view.setOnClickListener(onSensorClick(sens.device_id, sens.sensor_id));

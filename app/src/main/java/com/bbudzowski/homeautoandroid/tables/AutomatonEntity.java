@@ -4,8 +4,8 @@ public class AutomatonEntity {
     public String name;
     public String device_id_sens;
     public String sensor_id_sens;
-    public Float val;
-    public Float hysteresis;
+    public Float val_top;
+    public Float val_bot;
     public String device_id_acts;
     public String sensor_id_acts;
     public Integer state_up;

@@ -16,7 +16,7 @@ import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.ui.ListFragment;
-import com.bbudzowski.homeautoandroid.ui.device.unit.DeviceUnitFragment;
+import com.bbudzowski.homeautoandroid.ui.device.list.unit.DeviceUnitFragment;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -37,7 +37,7 @@ public class DeviceListFragment extends ListFragment {
         model.setDevices(mainActivity);
         final Observer<List<DeviceEntity>> devicesObserver = devices -> {
             root.removeAllViews();
-            createDevicesUi(root, devices);
+            genDevicesUi(root, devices);
         };
         model.getDevices().observe(getViewLifecycleOwner(), devicesObserver);
         return root;
@@ -51,6 +51,8 @@ public class DeviceListFragment extends ListFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getDevicesLastUpdate();
+                if(updateTime == null)
+                    return;
                 if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
                     model.getDevices().setValue(mainActivity.getDevices());
                     model.setLastUpdateTime(updateTime);
@@ -59,14 +61,14 @@ public class DeviceListFragment extends ListFragment {
         }, 0, updatePeriod);
     }
 
-    private void createDevicesUi(ConstraintLayout root, List<DeviceEntity> devices) {
+    private void genDevicesUi(ConstraintLayout root, List<DeviceEntity> devices) {
         if (devices == null || devices.size() == 0) {
             handleError(root, getString(R.string.no_results));
             return;
         }
         for (int i = 0; i < devices.size(); ++i) {
             ConstraintLayout view = createDeviceView(root, devices.get(i));
-            view.setId(("box" + i).hashCode());
+            view.setId(View.generateViewId());
             root.addView(view);
             view.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT));
         }
@@ -78,8 +80,8 @@ public class DeviceListFragment extends ListFragment {
         view.setBackgroundResource(R.drawable.layout_border);
         if(device.location == null)
             device.location = "Brak lokacji";
-        addTextView(view, device.location, "devLoc", 24f, R.color.teal_700);
-        addTextView(view, device.name, "devName", 24f, R.color.teal_700);
+        addTextView(view, device.name,24f, R.color.teal_700);
+        addTextView(view, device.location,20f, R.color.teal_700);
         constraintTextToView(view);
         view.setOnClickListener(onDeviceClick(device.device_id));
         return view;

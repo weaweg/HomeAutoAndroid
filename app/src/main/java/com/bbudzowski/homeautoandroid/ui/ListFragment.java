@@ -3,7 +3,6 @@ package com.bbudzowski.homeautoandroid.ui;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -42,14 +41,19 @@ public abstract class ListFragment extends Fragment {
 
     protected void handleError(ConstraintLayout root, String text) {
         TextView emptyList = new TextView(root.getContext());
+        emptyList.setId(View.generateViewId());
         emptyList.setText(text);
         Typeface typeface = Typeface.create("sans-serif-black", Typeface.BOLD);
         emptyList.setTypeface(typeface);
         emptyList.setTextSize(24f);
         emptyList.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         root.addView(emptyList);
-        emptyList.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        emptyList.setLayoutParams(new LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        ConstraintSet cs = new ConstraintSet();
+        cs.clone(root);
+        cs.center(emptyList.getId(), ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0,
+                ConstraintSet.PARENT_ID, ConstraintSet.RIGHT, 0, .5f);
     }
 
     protected void replaceFragment(Fragment fragment, Bundle bundle) {
@@ -81,7 +85,7 @@ public abstract class ListFragment extends Fragment {
         set.applyTo(root);
     }
 
-    protected void addTextView(ConstraintLayout view, String text, String id, Float textSize, int color) {
+    protected void addTextView(ConstraintLayout view, String text, Float textSize, int color) {
         TextView textView = new TextView(view.getContext());
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         textView.setText(text);
@@ -89,7 +93,7 @@ public abstract class ListFragment extends Fragment {
         textView.setTypeface(typeface);
         textView.setTextSize(textSize);
         textView.setTextColor(view.getContext().getResources().getColor(color, null));
-        textView.setId(id.hashCode());
+        textView.setId(View.generateViewId());
         view.addView(textView);
         textView.setLayoutParams(new LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
