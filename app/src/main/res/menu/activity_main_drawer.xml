@@ -14,5 +14,11 @@
             android:icon="@drawable/ic_circle"
             android:iconTint="@color/purple_200"
             android:title="@string/menu_sensors" />
+
+        <item
+            android:id="@+id/nav_automatons"
+            android:icon="@drawable/ic_circle"
+            android:iconTint="@color/purple_200"
+            android:title="@string/menu_automatons" />
     </group>
 </menu>

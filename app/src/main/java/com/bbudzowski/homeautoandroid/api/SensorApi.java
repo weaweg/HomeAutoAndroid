@@ -1,9 +1,11 @@
 package com.bbudzowski.homeautoandroid.api;
 
+import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.fasterxml.jackson.databind.JavaType;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
@@ -21,7 +23,8 @@ public abstract class SensorApi extends BaseApi {
 
     public static List<SensorEntity> getSensors() {
         Response res = getResponse(base_url + "/all");
-        return (List<SensorEntity>) getResultList(res, listType);
+        List<SensorEntity> sensors = (List<SensorEntity>) getResultList(res, listType);
+        return sensors == null ? new ArrayList<>() : sensors;
     }
 
     public static SensorEntity getSensor(String device_id, String sensor_id) {

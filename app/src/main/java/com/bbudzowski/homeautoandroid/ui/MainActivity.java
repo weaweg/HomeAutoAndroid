@@ -1,10 +1,11 @@
-package com.bbudzowski.homeautoandroid;
+package com.bbudzowski.homeautoandroid.ui;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.api.AutomatonApi;
 import com.bbudzowski.homeautoandroid.api.DeviceApi;
 import com.bbudzowski.homeautoandroid.api.SensorApi;
@@ -32,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
+    private ActivityMainBinding binding;
     private AppBarConfiguration mAppBarConfiguration;
     private Timer updateTimer;
     private List<DeviceEntity> devices;
@@ -45,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.bbudzowski.homeautoandroid.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.hide();
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_devices, R.id.nav_sensors, R.id.nav_load)
+                R.id.nav_devices, R.id.nav_sensors, R.id.nav_automatons, R.id.nav_load)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
+                navigationView.setVisibility(View.VISIBLE);
                 navController.popBackStack();
                 navController.navigate(R.id.nav_devices);
             }
@@ -76,14 +80,16 @@ public class MainActivity extends AppCompatActivity {
     private void getAllData () {
         devices = DeviceApi.getDevices();
         sensors = SensorApi.getSensors();
+        for(SensorEntity sens : sensors)
+            sens.device = getDevice(sens.device_id);
         automatons = AutomatonApi.getAutomatons();
+        for(AutomatonEntity aut : automatons) {
+            aut.sens = getSensor(aut.device_id_sens, aut.sensor_id_sens);
+            aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
+        }
         devicesLastUpdate = DeviceApi.getUpdateTime();
-        if(devicesLastUpdate == null) devicesLastUpdate = new Timestamp(0);
         sensorsLastUpdate = SensorApi.getUpdateTime();
-        if(sensorsLastUpdate == null) sensorsLastUpdate = new Timestamp(0);
         automatonsLastUpdate = AutomatonApi.getUpdateTime();
-        if(automatonsLastUpdate == null) automatonsLastUpdate = new Timestamp(0);
-        handler.sendEmptyMessage(0);
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -97,10 +103,16 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (updateTimeSensor.compareTo(sensorsLastUpdate) > 0) {
                     sensors = SensorApi.getSensors();
+                    for(SensorEntity sens : sensors)
+                        sens.device = getDevice(sens.device_id);
                     sensorsLastUpdate = updateTimeSensor;
                 }
                 if (updateTimeAutomaton.compareTo(automatonsLastUpdate) > 0) {
                     automatons = AutomatonApi.getAutomatons();
+                    for(AutomatonEntity aut : automatons) {
+                        aut.sens = getSensor(aut.device_id_sens, aut.sensor_id_sens);
+                        aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
+                    }
                     automatonsLastUpdate = updateTimeAutomaton;
                 }
 
@@ -108,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         };
         updateTimer = new Timer();
         updateTimer.schedule(timerTask, 0, 2000);
+        handler.sendEmptyMessage(0);
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
@@ -126,7 +127,7 @@ public abstract class BaseApi {
             return Timestamp.valueOf(mapper.readTree(
                     res.body().string()).path("desc").asText());
         } catch (Exception e) {
-            return null;
+            return new Timestamp(0);
         }
     }
 }

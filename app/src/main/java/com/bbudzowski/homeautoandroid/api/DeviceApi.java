@@ -4,6 +4,7 @@ import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.fasterxml.jackson.databind.JavaType;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
@@ -21,7 +22,8 @@ public abstract class DeviceApi extends BaseApi {
 
     public static List<DeviceEntity> getDevices() {
         Response res = getResponse(base_url + "/all");
-        return (List<DeviceEntity>) getResultList(res, listType);
+        List<DeviceEntity> devices = (List<DeviceEntity>) getResultList(res, listType);
+        return devices == null ? new ArrayList<>() : devices;
     }
 
     public static DeviceEntity getDevice(String device_id) {

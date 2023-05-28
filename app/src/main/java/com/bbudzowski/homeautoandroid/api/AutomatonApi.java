@@ -1,9 +1,11 @@
 package com.bbudzowski.homeautoandroid.api;
 
 import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
+import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.fasterxml.jackson.databind.JavaType;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
@@ -21,7 +23,8 @@ public abstract class AutomatonApi extends BaseApi{
 
     public static List<AutomatonEntity> getAutomatons() {
         Response res = getResponse(base_url + "/all");
-        return (List<AutomatonEntity>) getResultList(res, listType);
+        List<AutomatonEntity> automatons = (List<AutomatonEntity>) getResultList(res, listType);
+        return automatons == null ? new ArrayList<>() : automatons;
     }
 
     public static AutomatonEntity getAutomaton(String name) {

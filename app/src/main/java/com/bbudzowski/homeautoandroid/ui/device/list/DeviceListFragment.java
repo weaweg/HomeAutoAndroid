@@ -4,19 +4,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStore;
 
-import com.bbudzowski.homeautoandroid.MainActivity;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
-import com.bbudzowski.homeautoandroid.ui.ListFragment;
-import com.bbudzowski.homeautoandroid.ui.device.list.unit.DeviceUnitFragment;
+import com.bbudzowski.homeautoandroid.ui.fragments.ListFragment;
+import com.bbudzowski.homeautoandroid.ui.device.unit.DeviceUnitFragment;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -32,13 +34,11 @@ public class DeviceListFragment extends ListFragment {
                              ViewGroup container, Bundle savedInstanceState) {
         mainActivity = ((MainActivity) getActivity());
         binding = FragmentListBinding.inflate(inflater, container, false);
-        ConstraintLayout root = binding.getRoot();
-        model = new ViewModelProvider(this).get(DeviceListViewModel.class);
-        model.setDevices(mainActivity);
-        final Observer<List<DeviceEntity>> devicesObserver = devices -> {
-            root.removeAllViews();
-            genDevicesUi(root, devices);
-        };
+        ScrollView root = binding.getRoot();
+        model = new DeviceListViewModel(mainActivity);
+        getViewModelStore().put("deviceList", model);
+        final Observer<List<DeviceEntity>> devicesObserver =
+                devices -> genDevicesUi(root.findViewById(R.id.units_list), devices);
         model.getDevices().observe(getViewLifecycleOwner(), devicesObserver);
         return root;
     }
@@ -51,10 +51,8 @@ public class DeviceListFragment extends ListFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getDevicesLastUpdate();
-                if(updateTime == null)
-                    return;
                 if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
-                    model.getDevices().setValue(mainActivity.getDevices());
+                    model.getDevices().postValue(mainActivity.getDevices());
                     model.setLastUpdateTime(updateTime);
                 }
             }
@@ -62,6 +60,7 @@ public class DeviceListFragment extends ListFragment {
     }
 
     private void genDevicesUi(ConstraintLayout root, List<DeviceEntity> devices) {
+        root.removeAllViews();
         if (devices == null || devices.size() == 0) {
             handleError(root, getString(R.string.no_results));
             return;
@@ -75,14 +74,15 @@ public class DeviceListFragment extends ListFragment {
         constraintViewsToRoot(root);
     }
 
-    private ConstraintLayout createDeviceView(View root, DeviceEntity device) {
+    private ConstraintLayout createDeviceView(ConstraintLayout root, DeviceEntity device) {
+        System.out.println(root);
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
         if(device.location == null)
             device.location = "Brak lokacji";
-        addTextView(view, device.name,24f, R.color.teal_700);
-        addTextView(view, device.location,20f, R.color.teal_700);
-        constraintTextToView(view);
+        addTextView(view, device.name,28f, R.color.purple_500);
+        addTextView(view, device.location,24f, R.color.purple_500);
+        constraintTextToView(view, 0);
         view.setOnClickListener(onDeviceClick(device.device_id));
         return view;
     }
@@ -91,7 +91,7 @@ public class DeviceListFragment extends ListFragment {
         return view -> {
             Bundle bundle = new Bundle();
             bundle.putString("device_id", device_id);
-            replaceFragment(new DeviceUnitFragment(), bundle);
+            replaceFragment(R.id.nav_device, bundle);
         };
     }
 }

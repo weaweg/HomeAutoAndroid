@@ -14,7 +14,7 @@
         android:theme="@style/Theme.HomeAutoAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.HomeAutoAndroid.NoActionBar">
             <intent-filter>
@@ -23,12 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.LoadFragment"
-            android:exported="true"
-            android:theme="@style/Theme.HomeAutoAndroid.NoActionBar">
-        </activity>
-        <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.HomeAutoAndroid.NoActionBar">
         </activity>

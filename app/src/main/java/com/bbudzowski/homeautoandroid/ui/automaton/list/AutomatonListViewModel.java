@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.bbudzowski.homeautoandroid.api.AutomatonApi;
 import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -13,11 +14,12 @@ public class AutomatonListViewModel extends ViewModel {
     private final MutableLiveData<List<AutomatonEntity>> automatons;
     private Timestamp lastUpdateTime;
 
-    public AutomatonListViewModel() {
+    public AutomatonListViewModel(MainActivity mainActivity) {
         automatons = new MutableLiveData<>();
-        automatons.setValue(AutomatonApi.getAutomatons());
-        lastUpdateTime = AutomatonApi.getUpdateTime();
+        automatons.setValue(mainActivity.getAutomatons());
+        lastUpdateTime = mainActivity.getAutomatonsLastUpdate();
     }
+
     public MutableLiveData<List<AutomatonEntity>> getAutomatons() {
         return automatons;
     }

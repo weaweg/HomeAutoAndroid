@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoandroid;
+package com.bbudzowski.homeautoandroid.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,9 +6,12 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.Button;
 
+import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.api.BaseApi;
 import com.bbudzowski.homeautoandroid.databinding.ActivityLoginBinding;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.InputStream;
@@ -26,10 +29,11 @@ public class LoginActivity extends Activity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         findViewById(R.id.login_button).setOnClickListener(view ->
-                onLoginClick(binding.getRoot()));
+                onLoginClick(binding.getRoot(), view));
     }
 
-    private void onLoginClick(View root) {
+    private void onLoginClick(View root, View button) {
+        button.setOnClickListener(null);
         //String username = ((TextView) findViewById(R.id.inputUsername)).getText().toString();
         //String password = ((TextView) findViewById(R.id.inputPassword)).getText().toString();
         String username = "bbudzowski";

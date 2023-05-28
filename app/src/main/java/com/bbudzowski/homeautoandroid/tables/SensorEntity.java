@@ -10,7 +10,7 @@ public class SensorEntity {
     public String sensor_id;
     public Boolean discrete;
     public String name;
-    public Integer current_val;
+    public Float current_val;
     public Timestamp m_time;
     public JSONObject json_desc;
     public DeviceEntity device;

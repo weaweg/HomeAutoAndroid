@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoandroid.ui;
+package com.bbudzowski.homeautoandroid.ui.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.bbudzowski.homeautoandroid.MainActivity;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.databinding.FragmentLoadBinding;
 
 public class LoadFragment extends Fragment {

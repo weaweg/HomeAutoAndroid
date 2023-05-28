@@ -4,22 +4,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bbudzowski.homeautoandroid.MainActivity;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
-import com.bbudzowski.homeautoandroid.ui.ListFragment;
+import com.bbudzowski.homeautoandroid.ui.automaton.list.AutomatonListViewModel;
+import com.bbudzowski.homeautoandroid.ui.fragments.ListFragment;
 
 import org.json.JSONException;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -34,13 +37,11 @@ public class SensorListFragment extends ListFragment {
                              ViewGroup container, Bundle savedInstanceState) {
         mainActivity = ((MainActivity) getActivity());
         binding = FragmentListBinding.inflate(inflater, container, false);
-        ConstraintLayout root = binding.getRoot();
-        model = new ViewModelProvider(this).get(SensorListViewModel.class);
-        model.setSensors(mainActivity);
-        final Observer<List<SensorEntity>> sensorObserver = sensors -> {
-            root.removeAllViews();
-            createSensorsUi(root, sensors);
-        };
+        ScrollView root = binding.getRoot();
+        model = new SensorListViewModel(mainActivity);
+        getViewModelStore().put("sensorList", model);
+        final Observer<List<SensorEntity>> sensorObserver =
+                sensors -> createSensorsUi(root.findViewById(R.id.units_list), sensors);
         model.getSensors().observe(getViewLifecycleOwner(), sensorObserver);
         return root;
     }
@@ -56,7 +57,7 @@ public class SensorListFragment extends ListFragment {
                 if(mainActivity.getDevicesLastUpdate().compareTo(updateTime) > 0)
                     updateTime = mainActivity.getDevicesLastUpdate();
                 if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
-                    model.getSensors().setValue(model.genSensorsData(mainActivity));
+                    model.getSensors().postValue(mainActivity.getSensors());
                     model.setLastUpdateTime(updateTime);
                 }
             }
@@ -64,6 +65,7 @@ public class SensorListFragment extends ListFragment {
     }
 
     private void createSensorsUi(ConstraintLayout root, List<SensorEntity> sensors) {
+        root.removeAllViews();
         if (sensors == null || sensors.size() == 0) {
             handleError(root, getString(R.string.no_results));
             return;
@@ -77,31 +79,49 @@ public class SensorListFragment extends ListFragment {
         constraintViewsToRoot(root);
     }
 
-    private ConstraintLayout createSensorView(View root, SensorEntity sens) {
+    private ConstraintLayout createSensorView(ConstraintLayout root, SensorEntity sens) {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
         if(sens.device.location == null)
             sens.device.location = "Brak lokacji";
         if(sens.name == null)
             sens.name = "Nowe urządzenie";
-        String sensTitle = sens.name + " - " + sens.device.location;
-        addTextView(view, sensTitle,24f, R.color.teal_700);
+        addTextView(view, sens.name,24f, R.color.purple_500);
+        String txt = sens.device.location + " - ";
         if(!sens.discrete) {
             String unit;
-            try { unit = sens.json_desc.getString("unit");
-            } catch (JSONException e) { unit = ""; }
-            addTextView(view, sens.current_val.toString() + unit,
-                    24f, R.color.teal_200);
-            String mTime = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss",
-                    Locale.getDefault()).format(sens.m_time);
-            addTextView(view, mTime,24f, R.color.teal_200);
+            if(sens.json_desc != null)
+                try { unit = sens.json_desc.getString("unit");
+                } catch (JSONException e) { unit = ""; }
+            else
+                unit = "";
+            String val = "---";
+            if(sens.current_val != null)
+                val = sens.current_val.toString();
+            addTextView(view, txt + val + unit,
+                    24f, R.color.purple_500);
+            String status;
+            int colorId;
+            if(sens.m_time == null)
+                sens.m_time = new Timestamp(0);
+            Timestamp hourBefore = new Timestamp(Instant.now().
+                    minus(1, ChronoUnit.HOURS).toEpochMilli());
+            if(hourBefore.compareTo(sens.m_time) > 0) {
+                status = "OFFLINE";
+                colorId = R.color.red;
+            }
+            else {
+                status = "ONLINE";
+                colorId = R.color.green;
+            }
+            addTextView(view, status,24f, colorId);
         } else {
             String stateDesc;
             try { stateDesc = sens.json_desc.getString(sens.current_val.toString());
-            } catch (JSONException e) { stateDesc = ""; }
-            addTextView(view, stateDesc,24f, R.color.teal_200);
+            } catch (JSONException e) { stateDesc = sens.current_val.toString(); }
+            addTextView(view, txt + stateDesc,24f, R.color.purple_500);
         }
-        constraintTextToView(view);
+        constraintTextToView(view, 0);
         view.setOnClickListener(onSensorClick(sens.device_id, sens.sensor_id));
         return view;
     }

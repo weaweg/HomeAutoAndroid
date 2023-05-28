@@ -16,4 +16,7 @@
     <string name="password">Hasło</string>
     <string name="login">zaloguj</string>
     <string name="login_title">HomeAI \n Aplikacja Zarządzająca</string>
+    <string name="save">Zapisz</string>
+    <string name="menu_automatons">Automaty</string>
+    <string name="menu_device">Urządzenie</string>
 </resources>
