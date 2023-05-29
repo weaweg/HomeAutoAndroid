@@ -1,14 +1,19 @@
 package com.bbudzowski.homeautoandroid.ui;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -33,6 +38,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
+
     private ActivityMainBinding binding;
     private AppBarConfiguration mAppBarConfiguration;
     private Timer updateTimer;
@@ -42,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
     private Timestamp devicesLastUpdate;
     private Timestamp sensorsLastUpdate;
     private Timestamp automatonsLastUpdate;
-    Handler handler;
+    private Handler handler;
+
+    public ActivityMainBinding getBinding() {
+        return binding;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,20 +61,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.hide();
-        binding.appBarMain.fab.setOnClickListener(view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show());
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_devices, R.id.nav_sensors, R.id.nav_automatons, R.id.nav_load)
+                R.id.nav_devices, R.id.nav_sensors, R.id.nav_automatons)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {

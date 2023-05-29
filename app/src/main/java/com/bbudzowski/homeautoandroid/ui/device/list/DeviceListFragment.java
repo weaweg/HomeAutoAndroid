@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class DeviceListFragment extends BasicFragment {
-    protected FragmentListBinding binding;
+public final class DeviceListFragment extends BasicFragment {
+    private FragmentListBinding binding;
     private DeviceListViewModel model;
 
     @Override
@@ -48,12 +48,18 @@ public class DeviceListFragment extends BasicFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getDevicesLastUpdate();
-                if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
+                if (updateTime.compareTo(model.getLastUpdateTime()) > 0) {
                     model.getDevices().postValue(mainActivity.getDevices());
                     model.setLastUpdateTime(updateTime);
                 }
             }
         }, 0, updatePeriod);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        updateTimer.cancel();
     }
 
     @Override
@@ -78,10 +84,9 @@ public class DeviceListFragment extends BasicFragment {
     }
 
     private ConstraintLayout createDeviceView(ConstraintLayout root, DeviceEntity device) {
-        System.out.println(root);
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        addTextView(view, device.name,32f);
+        addTextView(view, device.name,32f, R.color.purple_700);
         addTextView(view, device.location,24f);
         constraintTextToView(view, 0);
         view.setOnClickListener(onDeviceClick(device.device_id));

@@ -17,7 +17,7 @@ public abstract class DeviceApi extends BaseApi {
             constructCollectionType(List.class, DeviceEntity.class);
     private static final JavaType type = mapper.constructType(DeviceEntity.class);
 
-    public static Timestamp getUpdateTime(){
+    public static Timestamp getUpdateTime() {
         Response res = getResponse(base_url + "/update_time");
         return getUpdateTime(res);
     }
@@ -46,8 +46,15 @@ public abstract class DeviceApi extends BaseApi {
         }
         try (Response res = putResponse(base_url + "/update", bodyString)) {
             return res.code();
+        } catch (NullPointerException e) {
+            return -1;
         }
-        catch (NullPointerException e) {
+    }
+
+    public static int deleteDevice(String device_id) {
+        try (Response res = deleteResponse(base_url + "/delete?device_id=" + device_id)) {
+                return res.code();
+        } catch (NullPointerException e) {
             return -1;
         }
     }

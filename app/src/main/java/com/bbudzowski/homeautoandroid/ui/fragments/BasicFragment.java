@@ -1,8 +1,9 @@
 package com.bbudzowski.homeautoandroid.ui.fragments;
 
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,7 +17,6 @@ import androidx.navigation.Navigation;
 
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.ui.MainActivity;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Timer;
 
@@ -25,16 +25,16 @@ public abstract class BasicFragment extends Fragment {
     protected Timer updateTimer;
     protected int updatePeriod = 2000;
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        updateTimer.cancel();
-    }
-
     protected void replaceFragment(int navId, Bundle bundle) {
         NavController navController =
                 Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
         navController.navigate(navId, bundle);
+    }
+
+    protected void previousFragment() {
+        NavController navController =
+                Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
+        navController.navigateUp();
     }
 
     protected void handleError(ConstraintLayout root, String text) {
@@ -57,7 +57,7 @@ public abstract class BasicFragment extends Fragment {
         emptyList.setLayoutParams(layoutParams);
     }
 
-    protected void addTextView(ConstraintLayout view, String text, Float textSize, int color) {
+    protected int addTextView(ConstraintLayout view, String text, Float textSize, int color) {
         TextView textView = new TextView(view.getContext());
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         textView.setText(text);
@@ -70,15 +70,18 @@ public abstract class BasicFragment extends Fragment {
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         textView.setLayoutParams(layoutParams);
+        return textView.getId();
     }
 
-    protected void addTextView(ConstraintLayout view, String text, Float textSize) {
-        addTextView(view, text, textSize, R.color.purple_500);
+    protected int addTextView(ConstraintLayout view, String text, Float textSize) {
+        return addTextView(view, text, textSize, R.color.purple_500);
     }
 
-    protected int addEditTextView(ConstraintLayout view, String text, Float textSize, int color) {
+    protected int addEditTextView(ConstraintLayout view, String text, Float textSize, int color, boolean isNumeric) {
         EditText editText = new EditText(view.getContext());
         editText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        if(isNumeric)
+            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setText(text);
         Typeface typeface = Typeface.create("sans-serif-black", Typeface.BOLD);
         editText.setTypeface(typeface);
@@ -86,6 +89,7 @@ public abstract class BasicFragment extends Fragment {
         editText.setTextColor(view.getContext().getResources().getColor(color, null));
         editText.setId(View.generateViewId());
         editText.setBackground(null);
+        editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(30) });
         view.addView(editText);
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -93,12 +97,8 @@ public abstract class BasicFragment extends Fragment {
         return editText.getId();
     }
 
-    protected int addEditTextView(ConstraintLayout view, String text, Float textSize) {
-        return addEditTextView(view, text, textSize, R.color.teal_700);
-    }
-
-    protected void addListView(ConstraintLayout view, String text, Float textSize, int color) {
-
+    protected int addEditTextView(ConstraintLayout view, String text, Float textSize, boolean isNumeric) {
+        return addEditTextView(view, text, textSize, R.color.teal_700, isNumeric);
     }
 
     protected void constraintTextInLine(ConstraintLayout view) {

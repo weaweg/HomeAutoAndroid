@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SensorListFragment extends BasicFragment {
-    protected FragmentListBinding binding;
+public final class SensorListFragment extends BasicFragment {
+    private FragmentListBinding binding;
     private SensorListViewModel model;
 
     @Override
@@ -59,6 +59,12 @@ public class SensorListFragment extends BasicFragment {
         }, 0, updatePeriod);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        updateTimer.cancel();
+    }
+
     private void createSensorsUi(ConstraintLayout root, List<SensorEntity> sensors) {
         root.removeAllViews();
         if (sensors == null || sensors.size() == 0) {
@@ -77,8 +83,8 @@ public class SensorListFragment extends BasicFragment {
     private ConstraintLayout createSensorView(ConstraintLayout root, SensorEntity sens) {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        addTextView(view, sens.name,24f);
-        String txt = sens.device.location + " - ";
+        addTextView(view, sens.device.location,28f, R.color.purple_700);
+        String txt = sens.name + " - ";
         String unit = "";
         String val = "brak";
         if(!sens.discrete) {
@@ -90,12 +96,11 @@ public class SensorListFragment extends BasicFragment {
                 val = sens.current_val.toString();
 
         } else
-            if(sens.current_val != null && sens.json_desc != null) {
-                val = sens.current_val.toString();
-                try {
-                    unit = sens.json_desc.getString(val);
-                } catch (JSONException e) { unit = ""; }
-            }
+            if(sens.current_val != null)
+                if (sens.current_val == 0)
+                    val = "OFF";
+                else
+                    val = "ON";
         txt += val + unit;
         addTextView(view, txt, 20f);
         String status = "ONLINE";

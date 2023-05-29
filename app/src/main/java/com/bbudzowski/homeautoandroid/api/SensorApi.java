@@ -1,7 +1,9 @@
 package com.bbudzowski.homeautoandroid.api;
 
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -30,5 +32,27 @@ public abstract class SensorApi extends BaseApi {
         Response res = getResponse(
                 base_url + "?device_id=" + device_id + "&sensor_id=" + sensor_id);
         return (SensorEntity) getSingleResult(res, type);
+    }
+
+    public static int updateSensor(SensorEntity sensor) {
+        ObjectNode json = mapper.createObjectNode();
+        json.put("device_id", sensor.device_id);
+        json.put("sensor_id", sensor.sensor_id);
+        if(sensor.name != null)
+            json.put("name", sensor.name);
+        if(sensor.json_desc != null)
+            json.put("json_desc", sensor.json_desc.toString());
+        String bodyString;
+        try {
+            bodyString = mapper.writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            return -1;
+        }
+        try (Response res = putResponse(base_url + "/update", bodyString)) {
+            return res.code();
+        }
+        catch (NullPointerException e) {
+            return -1;
+        }
     }
 }

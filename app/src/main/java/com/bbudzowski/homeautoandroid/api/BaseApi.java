@@ -105,6 +105,25 @@ public abstract class BaseApi {
         }
     }
 
+    public static Response postResponse(String url, String bodyString) {
+        RequestBody body = RequestBody.create(bodyString, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder().post(body).url(url).build();
+        try {
+            return client.newCall(request).execute();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Response deleteResponse(String url) {
+        Request request = new Request.Builder().delete().url(url).build();
+        try {
+            return client.newCall(request).execute();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static List<?> getResultList(Response res, JavaType type) {
         try {
             return mapper.readValue(res.body().string(), type);

@@ -18,11 +18,7 @@ import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.ui.fragments.BasicFragment;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.sql.Timestamp;
-import java.util.Timer;
-import java.util.TimerTask;
-
-public class DeviceUnitFragment extends BasicFragment {
+public final class DeviceUnitFragment extends BasicFragment {
     protected FragmentUnitBinding binding;
     private DeviceUnitViewModel model;
     private String deviceId;
@@ -42,23 +38,10 @@ public class DeviceUnitFragment extends BasicFragment {
         model.getDevice().observe(getViewLifecycleOwner(), deviceObserver);
         root.getViewById(R.id.save_button).setOnClickListener((view) ->
                 onSaveClick((ConstraintLayout) root.getViewById(R.id.unit_layout)));
+        root.getViewById(R.id.delete_button).setOnClickListener((view) ->
+                onDeleteClick((ConstraintLayout) root.getViewById(R.id.unit_layout)));
+        root.getViewById(R.id.delete_button).setVisibility(View.VISIBLE);
         return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateTimer = new Timer();
-        updateTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Timestamp updateTime = mainActivity.getDevicesLastUpdate();
-                if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
-                    model.getDevice().postValue(mainActivity.getDevice(deviceId));
-                    model.setLastUpdateTime(updateTime);
-                }
-            }
-        }, 0, updatePeriod);
     }
 
     @Override
@@ -69,8 +52,8 @@ public class DeviceUnitFragment extends BasicFragment {
 
     private void createDeviceView(ConstraintLayout root, DeviceEntity device) {
         root.removeAllViews();
-        addTextView(root, device.name,48f);
-        editLocationId = addEditTextView(root, device.location,32f);
+        addTextView(root, device.name,48f, R.color.purple_700);
+        editLocationId = addEditTextView(root, device.location,32f, false);
         constraintTextToView(root, 30);
     }
 
@@ -81,10 +64,19 @@ public class DeviceUnitFragment extends BasicFragment {
         if(!locationText.equals("")) {
             device.location = locationText;
             if(DeviceApi.updateDevice(device) == 200) {
-                //model.getDevice().setValue(device);
                 Snackbar.make(binding.getRoot(), "Zaktualizowano urządzenie", Snackbar.LENGTH_SHORT).show();
+                previousFragment();
                 return;
             }
+        }
+        Snackbar.make(binding.getRoot(), "Aktualizacja nieudana", Snackbar.LENGTH_SHORT).show();
+    }
+    public void onDeleteClick(ConstraintLayout view) {
+        DeviceEntity device = model.getDevice().getValue();
+        if(DeviceApi.deleteDevice(device.device_id) == 200) {
+            Snackbar.make(binding.getRoot(), "Usunięto urządzenie", Snackbar.LENGTH_SHORT).show();
+            previousFragment();
+            return;
         }
         Snackbar.make(binding.getRoot(), "Aktualizacja nieudana", Snackbar.LENGTH_SHORT).show();
     }

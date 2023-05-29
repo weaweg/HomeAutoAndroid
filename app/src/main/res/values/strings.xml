@@ -5,7 +5,7 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_logout">Wyloguj</string>
 
     <string name="menu_devices">Urządzenia</string>
     <string name="menu_sensors">Czujniki</string>
@@ -20,4 +20,6 @@
     <string name="menu_automatons">Automaty</string>
     <string name="menu_device">Urządzenie</string>
     <string name="menu_sensor">Czujnik</string>
+    <string name="menu_automaton">Automat</string>
+    <string name="delete">Usuń</string>
 </resources>

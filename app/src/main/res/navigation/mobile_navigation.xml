@@ -6,6 +6,10 @@
     app:startDestination="@id/nav_load">
 
     <fragment
+        android:id="@+id/nav_automaton"
+        android:name="com.bbudzowski.homeautoandroid.ui.automaton.unit.AutomatonUnitFragment"
+        android:label="@string/menu_automaton" />
+    <fragment
         android:id="@+id/nav_sensor"
         android:name="com.bbudzowski.homeautoandroid.ui.sensor.unit.SensorUnitFragment"
         android:label="@string/menu_sensor" />

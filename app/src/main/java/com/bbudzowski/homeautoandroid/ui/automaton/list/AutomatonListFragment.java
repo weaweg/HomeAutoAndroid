@@ -17,6 +17,7 @@ import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.ui.fragments.BasicFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 
@@ -25,8 +26,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AutomatonListFragment extends BasicFragment {
-    protected FragmentListBinding binding;
+public final class AutomatonListFragment extends BasicFragment {
+    private FragmentListBinding binding;
     private AutomatonListViewModel model;
 
     @Override
@@ -47,6 +48,12 @@ public class AutomatonListFragment extends BasicFragment {
     @Override
     public void onResume() {
         super.onResume();
+        mainActivity.getBinding().appBarMain.fab.show();
+        mainActivity.getBinding().appBarMain.fab.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("new", true);
+            replaceFragment(R.id.nav_automaton, bundle);
+        });
         updateTimer = new Timer();
         updateTimer.schedule(new TimerTask() {
             @Override
@@ -61,8 +68,15 @@ public class AutomatonListFragment extends BasicFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        updateTimer.cancel();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mainActivity.getBinding().appBarMain.fab.hide();
         binding = null;
     }
 
@@ -85,14 +99,12 @@ public class AutomatonListFragment extends BasicFragment {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
 
-        addTextView(view, automaton.name, 28f);
-        addTextView(view, "", 20f);
-        addTextView(view, automaton.sens.name,20f);
-        addTextView(view, automaton.sens.device.location,20f);
+        addTextView(view, automaton.name, 32f, R.color.purple_700);
 
+        SensorEntity sens = automaton.sens;
         String unit = "";
-        if(automaton.sens.json_desc != null)
-            try { unit = automaton.sens.json_desc.getString("unit");
+        if(sens.json_desc != null)
+            try { unit = sens.json_desc.getString("unit");
             } catch (JSONException e) { unit = ""; }
         ConstraintLayout textLine = new ConstraintLayout(view.getContext());
         textLine.setId(View.generateViewId());
@@ -106,23 +118,16 @@ public class AutomatonListFragment extends BasicFragment {
         textLine.setLayoutParams(new LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-        addTextView(view, "", 20f);
-        SensorEntity acts = automaton.acts;
-        addTextView(view, acts.name,20f);
-        addTextView(view, acts.device.location,20f);
-
         textLine = new ConstraintLayout(view.getContext());
         textLine.setId(View.generateViewId());
-        String stateDesc = automaton.state_up.toString();
-        if(acts.current_val != null && acts.json_desc != null)
-            try { stateDesc = acts.json_desc.getString(automaton.state_up.toString());
-            } catch (JSONException e) { stateDesc = automaton.state_up.toString(); }
+        String stateDesc = "ON";
+        if (automaton.state_up == 0)
+            stateDesc = "OFF";
         addTextView(textLine, stateDesc,  20f);
         addTextView(textLine, " - ", 20f);
-        stateDesc = automaton.state_down.toString();
-        if(acts.current_val != null && acts.json_desc != null)
-            try { stateDesc = acts.json_desc.getString(automaton.state_down.toString());
-            } catch (JSONException e) { stateDesc = automaton.state_down.toString(); }
+        stateDesc = "ON";
+        if (automaton.state_down == 0)
+            stateDesc = "OFF";
         addTextView(textLine, stateDesc, 20f);
         constraintTextInLine(textLine);
         view.addView(textLine);
@@ -138,7 +143,8 @@ public class AutomatonListFragment extends BasicFragment {
         return view -> {
             Bundle bundle = new Bundle();
             bundle.putString("name", name);
-            //replaceFragment(new AutomatonUnitFragment(), bundle);
+            bundle.putBoolean("new", false);
+            replaceFragment(R.id.nav_automaton, bundle);
         };
     }
 }
