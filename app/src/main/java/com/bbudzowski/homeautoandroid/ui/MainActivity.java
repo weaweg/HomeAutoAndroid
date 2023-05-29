@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -96,17 +95,31 @@ public class MainActivity extends AppCompatActivity {
                 Timestamp updateTimeDevice = DeviceApi.getUpdateTime();
                 Timestamp updateTimeSensor = SensorApi.getUpdateTime();
                 Timestamp updateTimeAutomaton = AutomatonApi.getUpdateTime();
+                boolean isDevListUpdated = false;
+                boolean isSensListUpdated = false;
+                boolean isAutoListUpdated = false;
 
                 if (updateTimeDevice.compareTo(devicesLastUpdate) > 0) {
                     devices = DeviceApi.getDevices();
                     devicesLastUpdate = updateTimeDevice;
+                    isDevListUpdated = true;
                 }
+
                 if (updateTimeSensor.compareTo(sensorsLastUpdate) > 0) {
                     sensors = SensorApi.getSensors();
                     for(SensorEntity sens : sensors)
                         sens.device = getDevice(sens.device_id);
                     sensorsLastUpdate = updateTimeSensor;
+                    isSensListUpdated = true;
                 }
+
+                if(isDevListUpdated && !isSensListUpdated) {
+                    for(SensorEntity sens : sensors)
+                        sens.device = getDevice(sens.device_id);
+                    sensorsLastUpdate = updateTimeDevice;
+                    isSensListUpdated = true;
+                }
+
                 if (updateTimeAutomaton.compareTo(automatonsLastUpdate) > 0) {
                     automatons = AutomatonApi.getAutomatons();
                     for(AutomatonEntity aut : automatons) {
@@ -114,8 +127,17 @@ public class MainActivity extends AppCompatActivity {
                         aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
                     }
                     automatonsLastUpdate = updateTimeAutomaton;
+                    isAutoListUpdated = true;
                 }
 
+                if(isSensListUpdated && !isAutoListUpdated) {
+                    for(AutomatonEntity aut : automatons) {
+                        aut.sens = getSensor(aut.device_id_sens, aut.sensor_id_sens);
+                        aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
+                    }
+                    automatonsLastUpdate = updateTimeSensor;
+                    isAutoListUpdated = true;
+                }
             }
         };
         updateTimer = new Timer();

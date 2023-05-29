@@ -3,7 +3,6 @@ package com.bbudzowski.homeautoandroid.ui.automaton.list;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bbudzowski.homeautoandroid.api.AutomatonApi;
 import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
 import com.bbudzowski.homeautoandroid.ui.MainActivity;
 

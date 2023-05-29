@@ -3,8 +3,8 @@ package com.bbudzowski.homeautoandroid.ui.device.list;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 
 import java.sql.Timestamp;
 import java.util.List;

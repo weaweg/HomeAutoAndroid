@@ -9,14 +9,12 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
-import com.bbudzowski.homeautoandroid.ui.automaton.list.AutomatonListViewModel;
-import com.bbudzowski.homeautoandroid.ui.fragments.ListFragment;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
+import com.bbudzowski.homeautoandroid.ui.fragments.BasicFragment;
 
 import org.json.JSONException;
 
@@ -24,12 +22,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SensorListFragment extends ListFragment {
-    private MainActivity mainActivity;
+public class SensorListFragment extends BasicFragment {
+    protected FragmentListBinding binding;
     private SensorListViewModel model;
 
     @Override
@@ -54,8 +51,6 @@ public class SensorListFragment extends ListFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getSensorsLastUpdate();
-                if(mainActivity.getDevicesLastUpdate().compareTo(updateTime) > 0)
-                    updateTime = mainActivity.getDevicesLastUpdate();
                 if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
                     model.getSensors().postValue(mainActivity.getSensors());
                     model.setLastUpdateTime(updateTime);
@@ -82,45 +77,36 @@ public class SensorListFragment extends ListFragment {
     private ConstraintLayout createSensorView(ConstraintLayout root, SensorEntity sens) {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        if(sens.device.location == null)
-            sens.device.location = "Brak lokacji";
-        if(sens.name == null)
-            sens.name = "Nowe urządzenie";
-        addTextView(view, sens.name,24f, R.color.purple_500);
+        addTextView(view, sens.name,24f);
         String txt = sens.device.location + " - ";
+        String unit = "";
+        String val = "brak";
         if(!sens.discrete) {
-            String unit;
             if(sens.json_desc != null)
                 try { unit = sens.json_desc.getString("unit");
                 } catch (JSONException e) { unit = ""; }
-            else
-                unit = "";
-            String val = "---";
+
             if(sens.current_val != null)
                 val = sens.current_val.toString();
-            addTextView(view, txt + val + unit,
-                    24f, R.color.purple_500);
-            String status;
-            int colorId;
-            if(sens.m_time == null)
-                sens.m_time = new Timestamp(0);
-            Timestamp hourBefore = new Timestamp(Instant.now().
-                    minus(1, ChronoUnit.HOURS).toEpochMilli());
-            if(hourBefore.compareTo(sens.m_time) > 0) {
-                status = "OFFLINE";
-                colorId = R.color.red;
+
+        } else
+            if(sens.current_val != null && sens.json_desc != null) {
+                val = sens.current_val.toString();
+                try {
+                    unit = sens.json_desc.getString(val);
+                } catch (JSONException e) { unit = ""; }
             }
-            else {
-                status = "ONLINE";
-                colorId = R.color.green;
-            }
-            addTextView(view, status,24f, colorId);
-        } else {
-            String stateDesc;
-            try { stateDesc = sens.json_desc.getString(sens.current_val.toString());
-            } catch (JSONException e) { stateDesc = sens.current_val.toString(); }
-            addTextView(view, txt + stateDesc,24f, R.color.purple_500);
+        txt += val + unit;
+        addTextView(view, txt, 20f);
+        String status = "ONLINE";
+        int colorId = R.color.green;
+        Timestamp hourBefore = new Timestamp(Instant.now().
+                minus(1, ChronoUnit.HOURS).toEpochMilli());
+        if(sens.m_time == null || hourBefore.compareTo(sens.m_time) > 0) {
+            status = "OFFLINE";
+            colorId = R.color.red;
         }
+        addTextView(view, status,20f, colorId);
         constraintTextToView(view, 0);
         view.setOnClickListener(onSensorClick(sens.device_id, sens.sensor_id));
         return view;
@@ -131,7 +117,7 @@ public class SensorListFragment extends ListFragment {
             Bundle bundle = new Bundle();
             bundle.putString("device_id", device_id);
             bundle.putString("sensor_id", sensor_id);
-            //replaceFragment(new SensorUnitFragment(), bundle);
+            replaceFragment(R.id.nav_sensor, bundle);
         };
     }
 }

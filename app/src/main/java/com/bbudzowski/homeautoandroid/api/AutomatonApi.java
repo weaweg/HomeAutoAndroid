@@ -1,7 +1,6 @@
 package com.bbudzowski.homeautoandroid.api;
 
 import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
-import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.fasterxml.jackson.databind.JavaType;
 
 import java.sql.Timestamp;

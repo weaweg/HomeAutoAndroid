@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.databinding.FragmentLoadBinding;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 
 public class LoadFragment extends Fragment {
     FragmentLoadBinding binding;

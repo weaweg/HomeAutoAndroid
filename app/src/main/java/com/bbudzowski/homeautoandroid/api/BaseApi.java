@@ -10,7 +10,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
@@ -96,9 +95,9 @@ public abstract class BaseApi {
         }
     }
 
-    public static Response postResponse(String url, String bodyString) {
+    public static Response putResponse(String url, String bodyString) {
         RequestBody body = RequestBody.create(bodyString, MediaType.get("application/json; charset=utf-8"));
-        Request request = new Request.Builder().post(body).url(url).build();
+        Request request = new Request.Builder().put(body).url(url).build();
         try {
             return client.newCall(request).execute();
         } catch (Exception e) {

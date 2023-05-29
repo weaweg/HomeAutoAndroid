@@ -19,4 +19,5 @@
     <string name="save">Zapisz</string>
     <string name="menu_automatons">Automaty</string>
     <string name="menu_device">Urządzenie</string>
+    <string name="menu_sensor">Czujnik</string>
 </resources>

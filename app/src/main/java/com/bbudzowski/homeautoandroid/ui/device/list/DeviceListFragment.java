@@ -10,23 +10,20 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStore;
 
-import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.databinding.FragmentListBinding;
 import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
-import com.bbudzowski.homeautoandroid.ui.fragments.ListFragment;
-import com.bbudzowski.homeautoandroid.ui.device.unit.DeviceUnitFragment;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
+import com.bbudzowski.homeautoandroid.ui.fragments.BasicFragment;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class DeviceListFragment extends ListFragment {
-    private MainActivity mainActivity;
+public class DeviceListFragment extends BasicFragment {
+    protected FragmentListBinding binding;
     private DeviceListViewModel model;
 
     @Override
@@ -59,6 +56,12 @@ public class DeviceListFragment extends ListFragment {
         }, 0, updatePeriod);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void genDevicesUi(ConstraintLayout root, List<DeviceEntity> devices) {
         root.removeAllViews();
         if (devices == null || devices.size() == 0) {
@@ -78,10 +81,8 @@ public class DeviceListFragment extends ListFragment {
         System.out.println(root);
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        if(device.location == null)
-            device.location = "Brak lokacji";
-        addTextView(view, device.name,28f, R.color.purple_500);
-        addTextView(view, device.location,24f, R.color.purple_500);
+        addTextView(view, device.name,32f);
+        addTextView(view, device.location,24f);
         constraintTextToView(view, 0);
         view.setOnClickListener(onDeviceClick(device.device_id));
         return view;

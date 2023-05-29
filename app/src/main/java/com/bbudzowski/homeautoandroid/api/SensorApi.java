@@ -1,6 +1,5 @@
 package com.bbudzowski.homeautoandroid.api;
 
-import com.bbudzowski.homeautoandroid.tables.DeviceEntity;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.fasterxml.jackson.databind.JavaType;
 

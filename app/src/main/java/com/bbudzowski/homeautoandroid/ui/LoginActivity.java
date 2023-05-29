@@ -6,12 +6,10 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
-import android.widget.Button;
 
 import com.bbudzowski.homeautoandroid.R;
 import com.bbudzowski.homeautoandroid.api.BaseApi;
 import com.bbudzowski.homeautoandroid.databinding.ActivityLoginBinding;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.InputStream;
@@ -28,11 +26,10 @@ public class LoginActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        findViewById(R.id.login_button).setOnClickListener(view ->
-                onLoginClick(binding.getRoot(), view));
+        findViewById(R.id.login_button).setOnClickListener(this::onLoginClick);
     }
 
-    private void onLoginClick(View root, View button) {
+    private void onLoginClick(View button) {
         button.setOnClickListener(null);
         //String username = ((TextView) findViewById(R.id.inputUsername)).getText().toString();
         //String password = ((TextView) findViewById(R.id.inputPassword)).getText().toString();
@@ -40,19 +37,19 @@ public class LoginActivity extends Activity {
         String password = "tial2o3";
         InputStream keyFile = getResources().openRawResource(R.raw.server_ts);
         if(!BaseApi.createClient(keyFile, username, password)){
-            Snackbar.make(root, "Błąd tworzenia klienta http", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(binding.getRoot(), "Błąd tworzenia klienta http", Snackbar.LENGTH_SHORT).show();
             return;
         }
         try (Response resp = BaseApi.dummyRequest()) {
             if(resp == null) {
-                Snackbar.make(root, "Brak połączenia z serwerem", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), "Brak połączenia z serwerem", Snackbar.LENGTH_SHORT).show();
                 return;
             }
             if(resp.code() != 200) {
                 if(resp.code() == 401)
-                    Snackbar.make(root, "Niepoprawne dane logowania", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), "Niepoprawne dane logowania", Snackbar.LENGTH_SHORT).show();
                 else
-                    Snackbar.make(root, "Wewnętrzny błąd serwera", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), "Wewnętrzny błąd serwera", Snackbar.LENGTH_SHORT).show();
                 return;
             }
         }

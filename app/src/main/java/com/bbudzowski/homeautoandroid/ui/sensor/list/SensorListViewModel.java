@@ -3,8 +3,8 @@ package com.bbudzowski.homeautoandroid.ui.sensor.list;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
+import com.bbudzowski.homeautoandroid.ui.MainActivity;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -16,7 +16,7 @@ public class SensorListViewModel extends ViewModel {
     public SensorListViewModel(MainActivity mainActivity) {
         sensors = new MutableLiveData<>();
         sensors.setValue(mainActivity.getSensors());
-        lastUpdateTime = mainActivity.getLastUpdateTime();
+        lastUpdateTime = mainActivity.getSensorsLastUpdate();
     }
 
     public MutableLiveData<List<SensorEntity>> getSensors() {
