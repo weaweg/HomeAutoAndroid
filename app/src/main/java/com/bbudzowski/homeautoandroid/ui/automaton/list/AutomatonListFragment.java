@@ -17,7 +17,6 @@ import com.bbudzowski.homeautoandroid.tables.AutomatonEntity;
 import com.bbudzowski.homeautoandroid.tables.SensorEntity;
 import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.bbudzowski.homeautoandroid.ui.fragments.BasicFragment;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 

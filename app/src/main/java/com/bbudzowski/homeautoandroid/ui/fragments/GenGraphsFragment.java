@@ -10,7 +10,6 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,12 +24,10 @@ import com.bbudzowski.homeautoandroid.ui.MainActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -66,6 +63,9 @@ public class GenGraphsFragment extends BasicFragment {
             }
             Intent intent = new Intent(mainActivity, GraphActivity.class);
             intent.putExtra("date", date);
+            intent.putExtra("name", pickedSensor.name);
+            intent.putExtra("location", pickedSensor.device.location);
+            intent.putExtra("json_desc", pickedSensor.json_desc.toString());
             intent.putExtra("device_id", pickedSensor.device_id);
             intent.putExtra("sensor_id", pickedSensor.sensor_id);
             startActivity(intent);
