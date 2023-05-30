@@ -44,7 +44,7 @@ public abstract class BasicFragment extends Fragment {
         Typeface typeface = Typeface.create("sans-serif-black", Typeface.BOLD);
         emptyList.setTypeface(typeface);
         emptyList.setTextSize(32f);
-        emptyList.setTextColor(getResources().getColor(R.color.purple_500));
+        emptyList.setTextColor(getResources().getColor(R.color.purple_500, null));
         emptyList.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         root.addView(emptyList);
         LayoutParams layoutParams = new LayoutParams(

@@ -22,4 +22,8 @@
     <string name="menu_sensor">Czujnik</string>
     <string name="menu_automaton">Automat</string>
     <string name="delete">Usuń</string>
+    <string name="generate">Wygeneruj</string>
+    <string name="menu_gen_graphs">Wykresy</string>
+    <string name="pick_date">Wybierz datę</string>
+    <string name="dash">-</string>
 </resources>

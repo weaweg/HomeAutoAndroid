@@ -1,7 +1,6 @@
 package com.bbudzowski.homeautoandroid.ui.automaton.unit;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +75,7 @@ public final class AutomatonUnitFragment extends BasicFragment {
         editNameId = addEditTextView(root, auto.name,48f, false);
         SensorEntity sens = auto.sens;
         int sensTextId = addTextView(root, sens.name + " - " + sens.device.location,24f, R.color.teal_700);
-        addSensorListOnClick(sensTextId, "Wybierz czujnik", mainActivity.getSensors(), false);
+        addSensorListOnClick(sensTextId, mainActivity.getSensors(), false);
 
         String unit = "";
         if(sens.json_desc != null)
@@ -103,7 +102,7 @@ public final class AutomatonUnitFragment extends BasicFragment {
 
         SensorEntity acts = auto.acts;
         int actsTextId = addTextView(root, acts.name + " - " + acts.device.location,24f, R.color.teal_700);
-        addSensorListOnClick(actsTextId, "Wybierz czujnik", mainActivity.getSensors(), true);
+        addSensorListOnClick(actsTextId, mainActivity.getSensors(), true);
 
         String stateDesc = "ON";
         if(auto.state_up == 0)
@@ -216,10 +215,10 @@ public final class AutomatonUnitFragment extends BasicFragment {
         Snackbar.make(binding.getRoot(), "Aktualizacja nieudana", Snackbar.LENGTH_SHORT).show();
     }
 
-    private void addSensorListOnClick(int listTextId, String title, List<SensorEntity> sensTmp, boolean isDiscrete) {
+    private void addSensorListOnClick(int listTextId, List<SensorEntity> sensTmp, boolean isDiscrete) {
         List<SensorEntity> sensors = new ArrayList<>();
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(title);
+        builder.setTitle("Wybierz czujnik");
         builder.setCancelable(true);
         List<String> names = new ArrayList<>();
         for(SensorEntity sens : sensTmp)
@@ -227,7 +226,7 @@ public final class AutomatonUnitFragment extends BasicFragment {
                 sensors.add(sens);
                 names.add(sens.name + " - " + sens.device.location);
             }
-        builder.setItems(names.toArray(new CharSequence[0]), (DialogInterface.OnClickListener) (dialog, which) -> {
+        builder.setItems(names.toArray(new CharSequence[0]), (dialog, which) -> {
             updatedAuto = model.getAutomaton().getValue();
             SensorEntity sens = sensors.get(which);
             if(isDiscrete) {
@@ -246,4 +245,6 @@ public final class AutomatonUnitFragment extends BasicFragment {
         ConstraintLayout view = (ConstraintLayout) binding.getRoot().getViewById(R.id.unit_layout);
         view.getViewById(listTextId).setOnClickListener((v) -> dialog.show());
     }
+
+
 }

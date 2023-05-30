@@ -17,5 +17,10 @@
             android:id="@+id/nav_automatons"
             android:icon="@drawable/ic_circle"
             android:title="@string/menu_automatons" />
+
+        <item
+            android:id="@+id/nav_gen_graphs"
+            android:icon="@drawable/ic_circle"
+            android:title="@string/menu_gen_graphs" />
     </group>
 </menu>

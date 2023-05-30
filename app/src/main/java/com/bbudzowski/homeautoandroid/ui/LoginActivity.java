@@ -37,6 +37,11 @@ public class LoginActivity extends Activity {
         TextInputEditText textPassword = (TextInputEditText) findViewById(R.id.inputPassword);
         String username = "bbudzowski";// textUsername.getText().toString();
         String password = "tial2o3"; //textPassword.getText().toString();
+        if(username.equals("") || password.equals("")) {
+            Snackbar.make(binding.getRoot(), "Wpisz dane logowania!", Snackbar.LENGTH_SHORT).show();
+            button.setOnClickListener(this::onLoginClick);
+            return;
+        }
         InputStream keyFile = getResources().openRawResource(R.raw.server_ts);
         if(!BaseApi.createClient(keyFile, username, password)){
             Snackbar.make(binding.getRoot(), "Błąd tworzenia klienta http", Snackbar.LENGTH_SHORT).show();
