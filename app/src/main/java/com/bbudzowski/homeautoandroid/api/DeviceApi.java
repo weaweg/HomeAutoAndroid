@@ -53,7 +53,7 @@ public abstract class DeviceApi extends BaseApi {
 
     public static int deleteDevice(String device_id) {
         try (Response res = deleteResponse(base_url + "/delete?device_id=" + device_id)) {
-                return res.code();
+            return res.code();
         } catch (NullPointerException e) {
             return -1;
         }

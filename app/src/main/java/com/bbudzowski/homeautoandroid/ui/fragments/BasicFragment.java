@@ -80,7 +80,7 @@ public abstract class BasicFragment extends Fragment {
     protected int addEditTextView(ConstraintLayout view, String text, Float textSize, int color, boolean isNumeric) {
         EditText editText = new EditText(view.getContext());
         editText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        if(isNumeric)
+        if (isNumeric)
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setText(text);
         Typeface typeface = Typeface.create("sans-serif-black", Typeface.BOLD);
@@ -89,7 +89,7 @@ public abstract class BasicFragment extends Fragment {
         editText.setTextColor(view.getContext().getResources().getColor(color, null));
         editText.setId(View.generateViewId());
         editText.setBackground(null);
-        editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(30) });
+        editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(30)});
         view.addView(editText);
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -107,7 +107,7 @@ public abstract class BasicFragment extends Fragment {
         int childId = view.getChildAt(0).getId();
         set.connect(childId, ConstraintSet.LEFT, view.getId(), ConstraintSet.LEFT);
         set.centerVertically(childId, ConstraintSet.PARENT_ID);
-        for(int i = 1; i < view.getChildCount(); ++i) {
+        for (int i = 1; i < view.getChildCount(); ++i) {
             int nextChildId = view.getChildAt(i).getId();
             set.connect(nextChildId, ConstraintSet.LEFT, childId, ConstraintSet.RIGHT);
             set.centerVertically(nextChildId, ConstraintSet.PARENT_ID);
@@ -123,7 +123,7 @@ public abstract class BasicFragment extends Fragment {
         int childId = view.getChildAt(0).getId();
         set.connect(childId, ConstraintSet.TOP, view.getId(), ConstraintSet.TOP);
         set.centerHorizontally(childId, ConstraintSet.PARENT_ID);
-        for(int i = 1; i < view.getChildCount(); ++i) {
+        for (int i = 1; i < view.getChildCount(); ++i) {
             int nextChildId = view.getChildAt(i).getId();
             set.connect(nextChildId, ConstraintSet.TOP, childId, ConstraintSet.BOTTOM, margin);
             set.centerHorizontally(nextChildId, ConstraintSet.PARENT_ID);
@@ -140,7 +140,7 @@ public abstract class BasicFragment extends Fragment {
         set.connect(childId, ConstraintSet.TOP, root.getId(), ConstraintSet.TOP, 50);
         set.centerHorizontally(childId, ConstraintSet.PARENT_ID);
         set.constrainPercentWidth(childId, .8f);
-        for(int i = 1; i < root.getChildCount(); ++i) {
+        for (int i = 1; i < root.getChildCount(); ++i) {
             int nextChildId = root.getChildAt(i).getId();
             set.connect(nextChildId, ConstraintSet.TOP, childId, ConstraintSet.BOTTOM, 50);
             set.centerHorizontally(nextChildId, ConstraintSet.PARENT_ID);

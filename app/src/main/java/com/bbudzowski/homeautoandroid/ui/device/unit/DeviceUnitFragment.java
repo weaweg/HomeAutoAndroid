@@ -52,8 +52,8 @@ public final class DeviceUnitFragment extends BasicFragment {
 
     private void createDeviceView(ConstraintLayout root, DeviceEntity device) {
         root.removeAllViews();
-        addTextView(root, device.name,48f, R.color.purple_700);
-        editLocationId = addEditTextView(root, device.location,32f, false);
+        addTextView(root, device.name, 48f, R.color.purple_700);
+        editLocationId = addEditTextView(root, device.location, 32f, false);
         constraintTextToView(root, 30);
     }
 
@@ -61,9 +61,9 @@ public final class DeviceUnitFragment extends BasicFragment {
         DeviceEntity device = model.getDevice().getValue();
         EditText editText = (EditText) view.getViewById(editLocationId);
         String locationText = editText.getText().toString();
-        if(!locationText.equals("")) {
+        if (!locationText.equals("")) {
             device.location = locationText;
-            if(DeviceApi.updateDevice(device) == 200) {
+            if (DeviceApi.updateDevice(device) == 200) {
                 Snackbar.make(binding.getRoot(), "Zaktualizowano urządzenie", Snackbar.LENGTH_SHORT).show();
                 previousFragment();
                 return;
@@ -71,9 +71,10 @@ public final class DeviceUnitFragment extends BasicFragment {
         }
         Snackbar.make(binding.getRoot(), "Aktualizacja nieudana", Snackbar.LENGTH_SHORT).show();
     }
+
     public void onDeleteClick(ConstraintLayout view) {
         DeviceEntity device = model.getDevice().getValue();
-        if(DeviceApi.deleteDevice(device.device_id) == 200) {
+        if (DeviceApi.deleteDevice(device.device_id) == 200) {
             Snackbar.make(binding.getRoot(), "Usunięto urządzenie", Snackbar.LENGTH_SHORT).show();
             previousFragment();
             return;

@@ -57,23 +57,26 @@ public final class SensorUnitFragment extends BasicFragment {
 
     private void createSensorView(ConstraintLayout root, SensorEntity sens) {
         root.removeAllViews();
-        addTextView(root, sens.device.name,48f, R.color.purple_700);
-        addTextView(root, sens.device.location,32f, R.color.purple_700);
+        addTextView(root, sens.device.name, 48f, R.color.purple_700);
+        addTextView(root, sens.device.location, 32f, R.color.purple_700);
         editNameId = addEditTextView(root, sens.name, 28f, false);
-        if(!sens.discrete) {
+        if (!sens.discrete) {
             String unit = "";
             String val = "brak wartości";
-            if(sens.json_desc != null)
-                try { unit = sens.json_desc.getString("unit");
-                } catch (JSONException e) { unit = ""; }
+            if (sens.json_desc != null)
+                try {
+                    unit = sens.json_desc.getString("unit");
+                } catch (JSONException e) {
+                    unit = "";
+                }
 
-            if(sens.current_val != null)
+            if (sens.current_val != null)
                 val = sens.current_val.toString();
-            addTextView(root,val + unit,24f);
+            addTextView(root, val + unit, 24f);
 
         } else {
             String state = "-";
-            if(sens.current_val != null)
+            if (sens.current_val != null)
                 if (sens.current_val == 0)
                     state = "OFF";
                 else
@@ -81,14 +84,14 @@ public final class SensorUnitFragment extends BasicFragment {
             editValId = addTextView(root, state, 24f, R.color.teal_700);
             root.getViewById(editValId).setOnClickListener((view) -> {
                 TextView textView = (TextView) view;
-                if(textView.getText().toString().equals("OFF"))
+                if (textView.getText().toString().equals("OFF"))
                     textView.setText("ON");
                 else if (textView.getText().toString().equals("ON"))
                     textView.setText("OFF");
             });
         }
         String time = "brak czasu pomiaru";
-        if(sens.m_time != null)
+        if (sens.m_time != null)
             time = new SimpleDateFormat("HH:mm - dd.MM.yyyy", Locale.getDefault()).format(sens.m_time);
         addTextView(root, time, 24f);
         constraintTextToView(root, 10);
@@ -98,16 +101,16 @@ public final class SensorUnitFragment extends BasicFragment {
         SensorEntity sensor = model.getSensor().getValue();
         EditText editText = (EditText) view.getViewById(editNameId);
         String nameText = editText.getText().toString();
-        if(sensor.discrete) {
+        if (sensor.discrete) {
             String valText = ((TextView) view.getViewById(editValId)).getText().toString();
-            if(valText.equals("OFF"))
+            if (valText.equals("OFF"))
                 sensor.current_val = 0f;
             else if (valText.equals("ON"))
                 sensor.current_val = 1f;
         }
-        if(!nameText.equals("")) {
+        if (!nameText.equals("")) {
             sensor.name = nameText;
-            if(SensorApi.updateSensor(sensor) == 200) {
+            if (SensorApi.updateSensor(sensor) == 200) {
                 Snackbar.make(binding.getRoot(), "Zaktualizowano urządzenie", Snackbar.LENGTH_SHORT).show();
                 previousFragment();
                 return;

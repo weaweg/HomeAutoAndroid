@@ -53,11 +53,11 @@ public class GenGraphsFragment extends BasicFragment {
         ConstraintLayout root = binding.getRoot();
         ConstraintLayout view = (ConstraintLayout) root.getViewById(R.id.graph_layout);
         root.getViewById(R.id.generate_button).setOnClickListener(v -> {
-            if(pickedSensor == null) {
+            if (pickedSensor == null) {
                 Snackbar.make(binding.getRoot(), "Wybierz czujnik!", Snackbar.LENGTH_SHORT).show();
                 return;
             }
-            if(date == null) {
+            if (date == null) {
                 Snackbar.make(binding.getRoot(), "Wybierz datę!", Snackbar.LENGTH_SHORT).show();
                 return;
             }
@@ -101,8 +101,8 @@ public class GenGraphsFragment extends BasicFragment {
     }
 
     public void createGenGraphView(ConstraintLayout view) {
-        int text = addTextView(view, "Wybierz czujnik", 32f);
-        int sensTextId = addTextView(view, "Kliknij tutaj",24f, R.color.teal_700);
+        int text = addTextView(view, "Wybierz czujnik", 32f, R.color.purple_700);
+        int sensTextId = addTextView(view, "Kliknij tutaj", 24f, R.color.teal_700);
         addSensorListOnClick(sensTextId, mainActivity.getSensors());
         ConstraintSet set = new ConstraintSet();
         set.clone(view);
@@ -119,8 +119,8 @@ public class GenGraphsFragment extends BasicFragment {
         builder.setTitle("Wybierz czujnik");
         builder.setCancelable(true);
         List<String> names = new ArrayList<>();
-        for(SensorEntity sens : sensors)
-                names.add(sens.name + " - " + sens.device.location);
+        for (SensorEntity sens : sensors)
+            names.add(sens.name + " - " + sens.device.location);
         builder.setItems(names.toArray(new CharSequence[0]), (dialog, which) -> {
             pickedSensor = sensors.get(which);
             handler.sendEmptyMessage(listTextId);

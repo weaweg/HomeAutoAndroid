@@ -1,11 +1,13 @@
 package com.bbudzowski.homeautoandroid.ui;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -83,13 +85,13 @@ public class MainActivity extends AppCompatActivity {
         Executors.newSingleThreadExecutor().execute(this::getAllData);
     }
 
-    private void getAllData () {
+    private void getAllData() {
         devices = DeviceApi.getDevices();
         sensors = SensorApi.getSensors();
-        for(SensorEntity sens : sensors)
+        for (SensorEntity sens : sensors)
             sens.device = getDevice(sens.device_id);
         automatons = AutomatonApi.getAutomatons();
-        for(AutomatonEntity aut : automatons) {
+        for (AutomatonEntity aut : automatons) {
             aut.sens = getSensor(aut.device_id_sens, aut.sensor_id_sens);
             aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
         }
@@ -114,14 +116,14 @@ public class MainActivity extends AppCompatActivity {
 
                 if (updateTimeSensor.compareTo(sensorsLastUpdate) > 0) {
                     sensors = SensorApi.getSensors();
-                    for(SensorEntity sens : sensors)
+                    for (SensorEntity sens : sensors)
                         sens.device = getDevice(sens.device_id);
                     sensorsLastUpdate = updateTimeSensor;
                     isSensListUpdated = true;
                 }
 
-                if(isDevListUpdated && !isSensListUpdated) {
-                    for(SensorEntity sens : sensors)
+                if (isDevListUpdated && !isSensListUpdated) {
+                    for (SensorEntity sens : sensors)
                         sens.device = getDevice(sens.device_id);
                     sensorsLastUpdate = updateTimeDevice;
                     isSensListUpdated = true;
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (updateTimeAutomaton.compareTo(automatonsLastUpdate) > 0) {
                     automatons = AutomatonApi.getAutomatons();
-                    for(AutomatonEntity aut : automatons) {
+                    for (AutomatonEntity aut : automatons) {
                         aut.sens = getSensor(aut.device_id_sens, aut.sensor_id_sens);
                         aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
                     }
@@ -137,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
                     isAutoListUpdated = true;
                 }
 
-                if(isSensListUpdated && !isAutoListUpdated) {
-                    for(AutomatonEntity aut : automatons) {
+                if (isSensListUpdated && !isAutoListUpdated) {
+                    for (AutomatonEntity aut : automatons) {
                         aut.sens = getSensor(aut.device_id_sens, aut.sensor_id_sens);
                         aut.acts = getSensor(aut.device_id_acts, aut.sensor_id_acts);
                     }
@@ -163,6 +165,19 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_logout) {
+            getApplicationContext().deleteFile("config.txt");
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -218,15 +233,6 @@ public class MainActivity extends AppCompatActivity {
 
     public Timestamp getAutomatonsLastUpdate() {
         return automatonsLastUpdate;
-    }
-
-    public Timestamp getLastUpdateTime() {
-        Timestamp updateTime = devicesLastUpdate;
-        if(sensorsLastUpdate.compareTo(updateTime) > 0)
-            updateTime = sensorsLastUpdate;
-        if(automatonsLastUpdate.compareTo(updateTime) > 0)
-            updateTime = automatonsLastUpdate;
-        return updateTime;
     }
 
 }

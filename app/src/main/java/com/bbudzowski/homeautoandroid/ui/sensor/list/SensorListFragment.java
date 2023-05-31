@@ -51,7 +51,7 @@ public final class SensorListFragment extends BasicFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getSensorsLastUpdate();
-                if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
+                if (updateTime.compareTo(model.getLastUpdateTime()) > 0) {
                     model.getSensors().postValue(mainActivity.getSensors());
                     model.setLastUpdateTime(updateTime);
                 }
@@ -83,35 +83,37 @@ public final class SensorListFragment extends BasicFragment {
     private ConstraintLayout createSensorView(ConstraintLayout root, SensorEntity sens) {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        addTextView(view, sens.device.location,28f, R.color.purple_700);
+        addTextView(view, sens.device.location, 28f, R.color.purple_700);
         String txt = sens.name + " - ";
         String unit = "";
         String val = "brak";
-        if(!sens.discrete) {
-            if(sens.json_desc != null)
-                try { unit = sens.json_desc.getString("unit");
-                } catch (JSONException e) { unit = ""; }
+        if (!sens.discrete) {
+            if (sens.json_desc != null)
+                try {
+                    unit = sens.json_desc.getString("unit");
+                } catch (JSONException e) {
+                    unit = "";
+                }
 
-            if(sens.current_val != null)
+            if (sens.current_val != null)
                 val = sens.current_val.toString();
 
-        } else
-            if(sens.current_val != null)
-                if (sens.current_val == 0)
-                    val = "OFF";
-                else
-                    val = "ON";
+        } else if (sens.current_val != null)
+            if (sens.current_val == 0)
+                val = "OFF";
+            else
+                val = "ON";
         txt += val + unit;
         addTextView(view, txt, 20f);
         String status = "ONLINE";
         int colorId = R.color.green;
         Timestamp hourBefore = new Timestamp(Instant.now().
                 minus(1, ChronoUnit.HOURS).toEpochMilli());
-        if(sens.m_time == null || hourBefore.compareTo(sens.m_time) > 0) {
+        if (sens.m_time == null || hourBefore.compareTo(sens.m_time) > 0) {
             status = "OFFLINE";
             colorId = R.color.red;
         }
-        addTextView(view, status,20f, colorId);
+        addTextView(view, status, 20f, colorId);
         constraintTextToView(view, 0);
         view.setOnClickListener(onSensorClick(sens.device_id, sens.sensor_id));
         return view;

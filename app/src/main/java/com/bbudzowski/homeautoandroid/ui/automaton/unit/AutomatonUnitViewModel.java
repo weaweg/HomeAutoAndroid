@@ -13,8 +13,8 @@ public class AutomatonUnitViewModel extends ViewModel {
 
     public AutomatonUnitViewModel(MainActivity mainActivity, String name, boolean isNew) {
         automaton = new MutableLiveData<>();
-        if(!isNew)
-             automaton.setValue(mainActivity.getAutomaton(name));
+        if (!isNew)
+            automaton.setValue(mainActivity.getAutomaton(name));
         else {
             AutomatonEntity auto = new AutomatonEntity();
             auto.name = "Nowy automat";
@@ -28,8 +28,8 @@ public class AutomatonUnitViewModel extends ViewModel {
             auto.acts.device = new DeviceEntity();
             auto.acts.name = "Wybierz";
             auto.acts.device.location = "czujnik";
-            auto.state_up=1;
-            auto.state_down=0;
+            auto.state_up = 1;
+            auto.state_down = 0;
             automaton.setValue(auto);
         }
     }

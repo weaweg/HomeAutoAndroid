@@ -86,8 +86,8 @@ public final class DeviceListFragment extends BasicFragment {
     private ConstraintLayout createDeviceView(ConstraintLayout root, DeviceEntity device) {
         ConstraintLayout view = new ConstraintLayout(root.getContext());
         view.setBackgroundResource(R.drawable.layout_border);
-        addTextView(view, device.name,32f, R.color.purple_700);
-        addTextView(view, device.location,24f);
+        addTextView(view, device.name, 32f, R.color.purple_700);
+        addTextView(view, device.location, 24f);
         constraintTextToView(view, 0);
         view.setOnClickListener(onDeviceClick(device.device_id));
         return view;

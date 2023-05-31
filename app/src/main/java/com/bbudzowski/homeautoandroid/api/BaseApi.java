@@ -29,9 +29,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public abstract class BaseApi {
-    private static OkHttpClient client = null;
     public static final String host = "https://weaweg.mywire.org:4433/api";
     public static final ObjectMapper mapper = new ObjectMapper();
+    private static OkHttpClient client = null;
 
     public static boolean createClient(InputStream keyFile, String username, String password) {
         try {
@@ -39,9 +39,9 @@ public abstract class BaseApi {
             builder.hostnameVerifier((hostname, session) -> true);
             builder.authenticator((route, response) -> {
                 Response tmp = response;
-                for(int i = 0; tmp != null; ++i)  {
+                for (int i = 0; tmp != null; ++i) {
                     tmp = tmp.priorResponse();
-                    if(i >=3)
+                    if (i >= 3)
                         return null;
                 }
                 String credential = Credentials.basic(username, password);
@@ -50,16 +50,14 @@ public abstract class BaseApi {
             KeyStore myTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             myTrustStore.load(keyFile, "tial2o3".toCharArray());
             keyFile.close();
-
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(myTrustStore);
             TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-            if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
+            if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager trustManager)) {
                 throw new IllegalStateException("Unexpected default trust managers:"
                         + Arrays.toString(trustManagers));
             }
-            X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[]{trustManager}, null);

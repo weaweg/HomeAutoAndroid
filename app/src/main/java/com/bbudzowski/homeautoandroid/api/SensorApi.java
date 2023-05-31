@@ -17,7 +17,7 @@ public abstract class SensorApi extends BaseApi {
             constructCollectionType(List.class, SensorEntity.class);
     private static final JavaType type = mapper.constructType(SensorEntity.class);
 
-    public static Timestamp getUpdateTime(){
+    public static Timestamp getUpdateTime() {
         Response res = getResponse(base_url + "/update_time");
         return getUpdateTime(res);
     }
@@ -38,9 +38,9 @@ public abstract class SensorApi extends BaseApi {
         ObjectNode json = mapper.createObjectNode();
         json.put("device_id", sensor.device_id);
         json.put("sensor_id", sensor.sensor_id);
-        if(sensor.name != null)
+        if (sensor.name != null)
             json.put("name", sensor.name);
-        if(sensor.json_desc != null)
+        if (sensor.json_desc != null)
             json.put("json_desc", sensor.json_desc.toString());
         String bodyString;
         try {
@@ -50,8 +50,7 @@ public abstract class SensorApi extends BaseApi {
         }
         try (Response res = putResponse(base_url + "/update", bodyString)) {
             return res.code();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return -1;
         }
     }

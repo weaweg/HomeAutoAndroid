@@ -11,7 +11,7 @@ import java.util.List;
 
 import okhttp3.Response;
 
-public abstract class AutomatonApi extends BaseApi{
+public abstract class AutomatonApi extends BaseApi {
     private static final String base_url = host + "/automaton";
     private static final JavaType listType = mapper.getTypeFactory().
             constructCollectionType(List.class, AutomatonEntity.class);
@@ -52,8 +52,7 @@ public abstract class AutomatonApi extends BaseApi{
         }
         try (Response res = postResponse(base_url + "/add", bodyString)) {
             return res.code();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return -1;
         }
     }
@@ -77,8 +76,7 @@ public abstract class AutomatonApi extends BaseApi{
         }
         try (Response res = putResponse(base_url + "/update", bodyString)) {
             return res.code();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return -1;
         }
     }

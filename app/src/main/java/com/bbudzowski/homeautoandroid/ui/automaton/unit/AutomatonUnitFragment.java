@@ -27,13 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AutomatonUnitFragment extends BasicFragment {
-    private FragmentUnitBinding binding;
-    private AutomatonUnitViewModel model;
-
-    private AutomatonEntity updatedAuto;
-    private int editNameId;
     private final int[] valsId = new int[4];
     private final int[] linesId = new int[4];
+    private FragmentUnitBinding binding;
+    private AutomatonUnitViewModel model;
+    private AutomatonEntity updatedAuto;
+    private int editNameId;
     private boolean isNew;
 
 
@@ -72,21 +71,23 @@ public final class AutomatonUnitFragment extends BasicFragment {
 
     private void createAutomatonView(ConstraintLayout root, AutomatonEntity auto) {
         root.removeAllViews();
-        editNameId = addEditTextView(root, auto.name,48f, false);
+        editNameId = addEditTextView(root, auto.name, 48f, false);
         SensorEntity sens = auto.sens;
-        int sensTextId = addTextView(root, sens.name + " - " + sens.device.location,24f, R.color.teal_700);
+        int sensTextId = addTextView(root, sens.name + " - " + sens.device.location, 24f, R.color.teal_700);
         addSensorListOnClick(sensTextId, mainActivity.getSensors(), false);
 
         String unit = "";
-        if(sens.json_desc != null)
-            try { unit = sens.json_desc.getString("unit");
-            } catch (JSONException ignored) {}
+        if (sens.json_desc != null)
+            try {
+                unit = sens.json_desc.getString("unit");
+            } catch (JSONException ignored) {
+            }
 
         ConstraintLayout sensLineTop = new ConstraintLayout(root.getContext());
         sensLineTop.setId(View.generateViewId());
         linesId[0] = sensLineTop.getId();
         addTextView(sensLineTop, "Górna granica: ", 24f);
-        valsId[0] = addEditTextView(sensLineTop, auto.val_top.toString(),  24f, true);
+        valsId[0] = addEditTextView(sensLineTop, auto.val_top.toString(), 24f, true);
         addTextView(sensLineTop, unit, 24f);
         constraintTextInLine(sensLineTop);
         root.addView(sensLineTop);
@@ -95,44 +96,43 @@ public final class AutomatonUnitFragment extends BasicFragment {
         sensLineBot.setId(View.generateViewId());
         linesId[1] = sensLineBot.getId();
         addTextView(sensLineBot, "Dolna granica: ", 24f);
-        valsId[1] = addEditTextView(sensLineBot, auto.val_bot.toString(),  24f, true);
+        valsId[1] = addEditTextView(sensLineBot, auto.val_bot.toString(), 24f, true);
         addTextView(sensLineBot, unit, 24f);
         constraintTextInLine(sensLineBot);
         root.addView(sensLineBot);
 
         SensorEntity acts = auto.acts;
-        int actsTextId = addTextView(root, acts.name + " - " + acts.device.location,24f, R.color.teal_700);
+        int actsTextId = addTextView(root, acts.name + " - " + acts.device.location, 24f, R.color.teal_700);
         addSensorListOnClick(actsTextId, mainActivity.getSensors(), true);
 
         String stateDesc = "ON";
-        if(auto.state_up == 0)
+        if (auto.state_up == 0)
             stateDesc = "OFF";
         ConstraintLayout actsLineTop = new ConstraintLayout(root.getContext());
         actsLineTop.setId(View.generateViewId());
         linesId[2] = actsLineTop.getId();
         addTextView(actsLineTop, "Stan powyżej: ", 24f);
-        valsId[2] = addTextView(actsLineTop, stateDesc,24f, R.color.teal_700);
+        valsId[2] = addTextView(actsLineTop, stateDesc, 24f, R.color.teal_700);
         constraintTextInLine(actsLineTop);
         root.addView(actsLineTop);
 
         stateDesc = "ON";
-        if(auto.state_down == 0)
+        if (auto.state_down == 0)
             stateDesc = "OFF";
         ConstraintLayout actsLineBot = new ConstraintLayout(root.getContext());
         actsLineBot.setId(View.generateViewId());
         linesId[3] = actsLineBot.getId();
         addTextView(actsLineBot, "Stan poniżej: ", 24f);
-        valsId[3] = addTextView(actsLineBot, stateDesc,  24f, R.color.teal_700);
+        valsId[3] = addTextView(actsLineBot, stateDesc, 24f, R.color.teal_700);
 
 
         actsLineTop.getViewById(valsId[2]).setOnClickListener((view) -> {
             TextView textTop = (TextView) view;
             TextView textBot = (TextView) actsLineBot.getViewById(valsId[3]);
-            if(textTop.getText().toString().equals("OFF")) {
+            if (textTop.getText().toString().equals("OFF")) {
                 textTop.setText("ON");
                 textBot.setText("OFF");
-            }
-            else if (textTop.getText().toString().equals("ON")) {
+            } else if (textTop.getText().toString().equals("ON")) {
                 textTop.setText("OFF");
                 textBot.setText("ON");
             }
@@ -140,11 +140,10 @@ public final class AutomatonUnitFragment extends BasicFragment {
         actsLineBot.getViewById(valsId[3]).setOnClickListener((view) -> {
             TextView textBot = (TextView) view;
             TextView textTop = (TextView) actsLineTop.getViewById(valsId[2]);
-            if(textBot.getText().toString().equals("OFF")) {
+            if (textBot.getText().toString().equals("OFF")) {
                 textBot.setText("ON");
                 textTop.setText("OFF");
-            }
-            else if (textBot.getText().toString().equals("ON")) {
+            } else if (textBot.getText().toString().equals("ON")) {
                 textBot.setText("OFF");
                 textTop.setText("ON");
             }
@@ -159,13 +158,14 @@ public final class AutomatonUnitFragment extends BasicFragment {
         AutomatonEntity automaton = model.getAutomaton().getValue();
         EditText editText = (EditText) view.getViewById(editNameId);
         String nameText = editText.getText().toString();
-        if(!nameText.equals(""))
+        if (!nameText.equals(""))
             automaton.name = nameText;
 
 
         ConstraintLayout textLine = (ConstraintLayout) view.getViewById(linesId[0]);
         editText = (EditText) textLine.getViewById(valsId[0]);
-        automaton.val_top = Float.parseFloat(editText.getText().toString());;
+        automaton.val_top = Float.parseFloat(editText.getText().toString());
+        ;
 
         textLine = (ConstraintLayout) view.getViewById(linesId[1]);
         editText = (EditText) textLine.getViewById(valsId[1]);
@@ -173,19 +173,19 @@ public final class AutomatonUnitFragment extends BasicFragment {
 
         textLine = (ConstraintLayout) view.getViewById(linesId[2]);
         String valText = ((TextView) textLine.getViewById(valsId[2])).getText().toString();
-        if(valText.equals("OFF"))
+        if (valText.equals("OFF"))
             automaton.state_up = 0;
         else if (valText.equals("ON"))
             automaton.state_up = 1;
 
         textLine = (ConstraintLayout) view.getViewById(linesId[3]);
         valText = ((TextView) textLine.getViewById(valsId[3])).getText().toString();
-        if(valText.equals("OFF"))
+        if (valText.equals("OFF"))
             automaton.state_down = 0;
         else if (valText.equals("ON"))
             automaton.state_down = 1;
-        if(isNew) {
-            if(AutomatonApi.addAutomaton(automaton) == 201) {
+        if (isNew) {
+            if (AutomatonApi.addAutomaton(automaton) == 201) {
                 Snackbar.make(binding.getRoot(), "Dodano urządzenie", Snackbar.LENGTH_SHORT).show();
                 previousFragment();
                 return;
@@ -193,7 +193,7 @@ public final class AutomatonUnitFragment extends BasicFragment {
             Snackbar.make(binding.getRoot(), "Aktualizacja nieudana", Snackbar.LENGTH_SHORT).show();
             return;
         }
-        if(AutomatonApi.updateAutomaton(automaton) == 200) {
+        if (AutomatonApi.updateAutomaton(automaton) == 200) {
             Snackbar.make(binding.getRoot(), "Zaktualizowano urządzenie", Snackbar.LENGTH_SHORT).show();
             previousFragment();
             return;
@@ -203,11 +203,11 @@ public final class AutomatonUnitFragment extends BasicFragment {
 
     public void onDeleteClick() {
         AutomatonEntity automaton = model.getAutomaton().getValue();
-        if(isNew) {
+        if (isNew) {
             previousFragment();
             return;
         }
-        if(AutomatonApi.deleteAutomaton(automaton.name) == 200) {
+        if (AutomatonApi.deleteAutomaton(automaton.name) == 200) {
             Snackbar.make(binding.getRoot(), "Usunięto urządzenie", Snackbar.LENGTH_SHORT).show();
             previousFragment();
             return;
@@ -221,20 +221,19 @@ public final class AutomatonUnitFragment extends BasicFragment {
         builder.setTitle("Wybierz czujnik");
         builder.setCancelable(true);
         List<String> names = new ArrayList<>();
-        for(SensorEntity sens : sensTmp)
-            if(isDiscrete == sens.discrete) {
+        for (SensorEntity sens : sensTmp)
+            if (isDiscrete == sens.discrete) {
                 sensors.add(sens);
                 names.add(sens.name + " - " + sens.device.location);
             }
         builder.setItems(names.toArray(new CharSequence[0]), (dialog, which) -> {
             updatedAuto = model.getAutomaton().getValue();
             SensorEntity sens = sensors.get(which);
-            if(isDiscrete) {
+            if (isDiscrete) {
                 updatedAuto.device_id_acts = sens.device_id;
                 updatedAuto.sensor_id_acts = sens.sensor_id;
                 updatedAuto.acts = mainActivity.getSensor(sens.device_id, sens.sensor_id);
-            }
-            else {
+            } else {
                 updatedAuto.device_id_sens = sens.device_id;
                 updatedAuto.sensor_id_sens = sens.sensor_id;
                 updatedAuto.sens = mainActivity.getSensor(sens.device_id, sens.sensor_id);

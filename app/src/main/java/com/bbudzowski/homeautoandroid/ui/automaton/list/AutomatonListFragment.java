@@ -58,7 +58,7 @@ public final class AutomatonListFragment extends BasicFragment {
             @Override
             public void run() {
                 Timestamp updateTime = mainActivity.getAutomatonsLastUpdate();
-                if(updateTime.compareTo(model.getLastUpdateTime()) > 0) {
+                if (updateTime.compareTo(model.getLastUpdateTime()) > 0) {
                     model.getAutomatons().postValue(mainActivity.getAutomatons());
                     model.setLastUpdateTime(updateTime);
                 }
@@ -102,16 +102,19 @@ public final class AutomatonListFragment extends BasicFragment {
 
         SensorEntity sens = automaton.sens;
         String unit = "";
-        if(sens.json_desc != null)
-            try { unit = sens.json_desc.getString("unit");
-            } catch (JSONException e) { unit = ""; }
+        if (sens.json_desc != null)
+            try {
+                unit = sens.json_desc.getString("unit");
+            } catch (JSONException e) {
+                unit = "";
+            }
         ConstraintLayout textLine = new ConstraintLayout(view.getContext());
         textLine.setId(View.generateViewId());
         addTextView(textLine, "Górna: ", 20f);
-        addTextView(textLine, automaton.val_top.toString() + unit,  20f);
+        addTextView(textLine, automaton.val_top.toString() + unit, 20f);
         addTextView(textLine, " - ", 20f);
         addTextView(textLine, "Dolna: ", 20f);
-        addTextView(textLine, automaton.val_bot.toString() + unit,  20f);
+        addTextView(textLine, automaton.val_bot.toString() + unit, 20f);
         constraintTextInLine(textLine);
         view.addView(textLine);
         textLine.setLayoutParams(new LayoutParams(
@@ -122,7 +125,7 @@ public final class AutomatonListFragment extends BasicFragment {
         String stateDesc = "ON";
         if (automaton.state_up == 0)
             stateDesc = "OFF";
-        addTextView(textLine, stateDesc,  20f);
+        addTextView(textLine, stateDesc, 20f);
         addTextView(textLine, " - ", 20f);
         stateDesc = "ON";
         if (automaton.state_down == 0)

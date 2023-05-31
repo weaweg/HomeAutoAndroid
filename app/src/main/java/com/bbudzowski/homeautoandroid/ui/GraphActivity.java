@@ -37,10 +37,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class GraphActivity extends AppCompatActivity{
+public class GraphActivity extends AppCompatActivity {
     private LineChart chart;
     private List<MeasurementEntity> measurements;
     private String unit = "";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +60,7 @@ public class GraphActivity extends AppCompatActivity{
                 .format(Date.from(date.toInstant().plus(1, ChronoUnit.DAYS)));
         measurements = MeasurementApi.getMeasurementsForSensor(device_id, sensor_id, start, end);
         setContentView(root);
-        if(measurements.isEmpty()) {
+        if (measurements.isEmpty()) {
             handleError(root);
             return;
         }
@@ -68,7 +69,8 @@ public class GraphActivity extends AppCompatActivity{
         try {
             JSONObject json_desc = new JSONObject(extras.getString("json_desc"));
             unit = json_desc.getString("unit");
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         TextView title = findViewById(R.id.graph_title);
         String text = name + " - " + location;
@@ -108,6 +110,7 @@ public class GraphActivity extends AppCompatActivity{
         xAxis.setTextColor(purpleColor);
         xAxis.setValueFormatter(new ValueFormatter() {
             private final SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
             @Override
             public String getFormattedValue(float value) {
                 return mFormat.format(new Date((long) value));
@@ -132,6 +135,7 @@ public class GraphActivity extends AppCompatActivity{
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setEnabled(false);
     }
+
     private void setData(int lineColor) {
         ArrayList<Entry> values = new ArrayList<>();
         for (MeasurementEntity measure : measurements)
@@ -149,11 +153,6 @@ public class GraphActivity extends AppCompatActivity{
         LineData data = new LineData(set);
         chart.setData(data);
     }
-
-    private float getRandom(float range, float start) {
-        return (float) (Math.random() * range) + start;
-    }
-
 
     private void handleError(RelativeLayout root) {
         root.removeAllViews();
